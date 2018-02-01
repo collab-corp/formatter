@@ -1,0 +1,41 @@
+{
+    "name": "collab-corp/formatter",
+    "description": "Formatting utility package for laravel",
+    "license": "MIT",
+    "type": "library",
+    "keywords": ["laravel", "formatting", "input formatting"],
+    "authors": [
+        { "name": "Sergio Compean", "email": "scompean24@gmail.com" },
+        { "name": "Jonas Hansen", "email": "jonas.kerwin.hansen@gmail.com" }
+    ],
+    "require": {
+        "laravel/framework": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*",
+        "nesbot/carbon": "^1.22"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "CollabCorp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CollabCorp\\Formatter\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "CollabCorp\\Formatter\\FormatterServiceProvider"
+            ],
+	      	"aliases": {
+	      		"Formatter": "CollabCorp\\Formatter\\Formatter"
+	      	}
+        }
+    }
+}
