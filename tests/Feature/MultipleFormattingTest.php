@@ -41,7 +41,7 @@ class MultipleFormattingTest extends TestCase
         ];
 
         $request = Formatter::convert($formatters, $request);
-     
+
         $this->assertEquals($request['name'], 'Peter Parker');
         $this->assertEquals($request['phone'], '(123)456-7890');
         $this->assertEquals($request['ssn'], '123-45-6789');
@@ -71,7 +71,7 @@ class MultipleFormattingTest extends TestCase
         $request=[
 
             'name'=>'peter parker',
-            'somthing_name'=>'peter parker',//this should be the same cause were only formatting things that start with *name
+            'something_name'=>'peter parker',//this should be the same cause were only formatting things that start with *name
             'phone'=>'sdfdfsdf1234567890',
             'cell_phone'=>'sdfdfsdf1234567890',
             'number_something'=>'2', //this should be the same cause were only formatting things that end with *number
@@ -88,7 +88,7 @@ class MultipleFormattingTest extends TestCase
         $request = Formatter::convert($formatters, $request);
 
         $this->assertEquals($request['name'], 'Peter Parker');
-        $this->assertEquals($request['somthing_name'], 'peter parker');
+        $this->assertEquals($request['something_name'], 'peter parker');
         $this->assertEquals($request['phone'], '(123)456-7890');
         $this->assertEquals($request['cell_phone'], '(123)456-7890');
         $this->assertEquals($request['number_something'], '2');

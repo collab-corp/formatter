@@ -70,7 +70,7 @@ final class Formatter
     }
     /**
      * Create a new instance via static method
-     * @param  [mixed] $value
+     * @param  mixed $value
      * @return CollabCorp\Formatter\Convert
      */
     public static function create($value)
@@ -99,37 +99,31 @@ final class Formatter
 
     /**
     * Convert the input according to the formatters
-    * @param  [array] $formatters
-    * @param  [array] $requestInput
-    * @return [array] $formattedInput
+    * @param  array $formatters
+    * @param  array $requestInput
+    * @return array $formattedInput
     */
-    public static function convert($formatters, $requestInput)
+    public static function convert(array $formatters, array $requestInput)
     {
-        $formatter = new static();
-
-
-        $formatters = collect($formatters);
-
-        $explictKeys = $formatters->filter(function ($value, $key) use ($requestInput) {
+        $explictKeys = array_filter($formatters, function ($key) use ($requestInput) {
             return array_key_exists($key, $requestInput);
-        });
+        }, ARRAY_FILTER_USE_KEY);
 
-        $startsWith = $formatters->filter(function ($value, $key) {
+        $startsWith = array_filter($formatters, function ($key) {
             return starts_with($key, "*") && !ends_with($key, "*");
-        });
+        }, ARRAY_FILTER_USE_KEY);
 
-        $endsWith = $formatters->filter(function ($value, $key) {
+        $endsWith = array_filter($formatters, function ($key) {
             return !starts_with($key, "*") && ends_with($key, "*");
-            ;
-        });
+        }, ARRAY_FILTER_USE_KEY);
 
-        $contains = $formatters->filter(function ($value, $key) {
+        $contains = array_filter($formatters, function ($key) {
             return starts_with($key, "*") && ends_with($key, "*");
-        });
+        }, ARRAY_FILTER_USE_KEY);
 
 
         $requestInput = (new FormatterProcessor())->process(
-            collect($requestInput),
+            $requestInput,
             $explictKeys,
             $startsWith,
             $endsWith,

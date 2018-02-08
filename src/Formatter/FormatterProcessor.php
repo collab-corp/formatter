@@ -74,16 +74,16 @@ class FormatterProcessor
 
     /**
      * Process the formatters and convert the input
-     * @param  Array $requestInput
-     * @param Illuminate\Database\Eloquent\Collection $explicitKeys
-     * @param Illuminate\Database\Eloquent\Collection $startsWith
-     * @param Illuminate\Database\Eloquent\Collection $endWith
-     * @param Illuminate\Database\Eloquent\Collection $contains
+     * @param array $requestInput
+     * @param array $explicitKeys
+     * @param array $startsWith
+     * @param array $endWith
+     * @param array $contains
      * @param Array $requestInput
      */
     public function process($requestInput, $explictKeys, $startsWith, $endsWith, $contains)
     {
-        $request = $requestInput->all();
+        $request = $requestInput;
 
         $request = $this->convertExplicitKeys($request, $explictKeys);
 
@@ -94,7 +94,6 @@ class FormatterProcessor
 
         $request = $this->convertPatternInput($request, $contains);
 
-
         return $request;
     }
 
@@ -102,23 +101,18 @@ class FormatterProcessor
 
     /**
      * Convert pattern input keys
-     * @param  Array|Illuminate\Support\Collection $request
-     * @param  Illuminate\Database\Eloquent\Collection $collection
+     * @param  Array $request
+     * @param  array $formatters
      * @return Array $request
      */
-    private function convertPatternInput($request, $collection)
+    private function convertPatternInput($request, $formatters)
     {
-        if (!($request instanceof Illuminate\Support\Collection)) {
-            $request = collect($request);
-        }
-        $matches = collect($request);
-
-        foreach ($collection->all() as $input => $formattersToProcess) {
-            $matches = $request->filter(function ($value, $key) use ($input) {
+        foreach ($formatters as $input => $formattersToProcess) {
+            $matches = array_filter($request, function ($key) use ($input) {
                 return Str::is($input, $key);
-            });
+            }, ARRAY_FILTER_USE_KEY);
 
-            foreach ($matches->all() as $inputKey => $inputValue) {
+            foreach ($matches as $inputKey => $inputValue) {
                 $formatters = explode('|', $formattersToProcess);
 
                 foreach ($formatters as $formatterMethods) {
@@ -141,13 +135,13 @@ class FormatterProcessor
     }
     /**
      * Convert explicit input keys
-     * @param  Array $request
-     * @param  Illuminate\Database\Eloquent\Collection $explicitKeys
-     * @return Array $requestInput
+     * @param  array $request
+     * @param  array $explicitKeys
+     * @return array $requestInput
      */
     private function convertExplicitKeys($request, $explictKeys)
     {
-        foreach ($explictKeys->all() as $input => $formatters) {
+        foreach ($explictKeys as $input => $formatters) {
             $formatters = explode('|', $formatters);
 
             foreach ($formatters as $formatterMethods) {
@@ -169,10 +163,10 @@ class FormatterProcessor
     }
     /**
      * Handle an array input field
-     * @param  Array $input
+     * @param  array $input
      * @param  String $method
-     * @param  Array $params
-     * @return Array $newValues
+     * @param  array $params
+     * @return array $newValues
      */
     private function handleArrayInput($input, $method, $params)
     {
@@ -195,14 +189,14 @@ class FormatterProcessor
     /**
      * Call the current method during our process method
      * @param  String $method
-     * @param  Array $params
+     * @param  array $params
      * @param  mixed $value
      * @return mixed $newValue
      */
     public function callMethod($method, $params, $value)
     {
         if (method_exists(Formatter::class, Str::camel($method))) {
-            if (!in_array($method, $this->whiteList)) {
+            if (!in_array($method, $this->whiteList) && !Formatter::hasMacro($method)) {
                 throw new \Exception("CollabCorp\Formatter\Formatter: Call to undefined formatter method $method.");
             }
         } else {
