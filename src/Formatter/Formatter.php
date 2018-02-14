@@ -22,7 +22,7 @@ class Formatter
     /**
      * Construct a new instance
      * @param mixed $value
-     * @return CollabCorp\Formatter\Convert
+     * @return CollabCorp\Formatter\Formatter
      */
     public function __construct($value = '')
     {
