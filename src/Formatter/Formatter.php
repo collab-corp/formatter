@@ -8,20 +8,20 @@ use CollabCorp\Formatter\Traits\HandlesMathConversions;
 use CollabCorp\Formatter\Traits\HandlesStringConversions;
 use Illuminate\Support\Traits\Macroable;
 
-final class Formatter
+class Formatter
 {
     use HandlesDateConversions,HandlesMathConversions,HandlesStringConversions,Macroable;
 
     /**
      * The value that is being formatted
-     * @var [mixed] $value
+     * @var mixed $value
      */
     protected $value;
 
 
     /**
      * Construct a new instance
-     * @param [mixed] $value
+     * @param mixed $value
      * @return CollabCorp\Formatter\Convert
      */
     public function __construct($value = '')
@@ -53,7 +53,7 @@ final class Formatter
     }
 
     /**
-    * Call this method to get a singleton instance
+    * Get the singleton instance
     * @param  $value
     * @return CollabCorp\Formatter\Formatter
     */
@@ -100,38 +100,27 @@ final class Formatter
     /**
     * Convert the input according to the formatters
     * @param  array $formatters
-    * @param  array $requestInput
-    * @return array $formattedInput
+    * @param  array $request
+    * @return Illuminate\Support\Collection
     */
-    public static function convert(array $formatters, array $requestInput)
+    public static function convert(array $formatters, array $request)
     {
-        $explictKeys = array_filter($formatters, function ($key) use ($requestInput) {
-            return array_key_exists($key, $requestInput) || !is_null(data_get($requestInput, $key));
+        $explictKeys = array_filter($formatters, function ($key) use ($request) {
+            return array_key_exists($key, $request) || !is_null(data_get($request, $key));
         }, ARRAY_FILTER_USE_KEY);
 
-        $startsWith = array_filter($formatters, function ($key) {
-            return starts_with($key, "*") && !ends_with($key, "*");
-        }, ARRAY_FILTER_USE_KEY);
-
-        $endsWith = array_filter($formatters, function ($key) {
-            return !starts_with($key, "*") && ends_with($key, "*");
-        }, ARRAY_FILTER_USE_KEY);
-
-        $contains = array_filter($formatters, function ($key) {
-            return starts_with($key, "*") && ends_with($key, "*");
+        $patterns = array_filter($formatters, function ($key) use ($request) {
+            return  !array_key_exists($key, $request) && is_null(data_get($request, $key));
         }, ARRAY_FILTER_USE_KEY);
 
 
-        $requestInput = (new FormatterProcessor())->process(
-            $requestInput,
+        $request = (new FormatterProcessor())->process(
+            $request,
             $explictKeys,
-            $startsWith,
-            $endsWith,
-            $contains
-
+            $patterns
         );
 
-        return $requestInput;
+        return collect($request);
     }
 
     /**

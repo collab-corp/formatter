@@ -88,14 +88,14 @@ class MultipleFormattingTest extends TestCase
             ],
             'explicit'=>'',
             'nest'=>[
-                'some_dollar'=>"$40",
-                'phone'=>'(830)374-5517',
-                'foo'=>'34',
+                'phone'=>'(830)374-5517', //these should be formatted
+                'foo'=>'34', //these should be formatted
             ]
         ];
 
 
         $request = Formatter::convert($formatters, $request);
+
 
         $this->assertEquals('Peter Parker', $request['name']);
         $this->assertEquals('peter parker', $request['something_name']);

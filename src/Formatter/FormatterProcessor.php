@@ -74,25 +74,16 @@ class FormatterProcessor
 
     /**
      * Process the formatters and convert the input
-     * @param array $requestInput
+     * @param array $request
      * @param array $explicitKeys
-     * @param array $startsWith
-     * @param array $endWith
-     * @param array $contains
-     * @param Array $requestInput
+     * @param array $pattern
+     * @param array $request
      */
-    public function process($requestInput, $explictKeys, $startsWith, $endsWith, $contains)
+    public function process($request, $explictKeys, $patterns)
     {
-        $request = $requestInput;
-
         $request = $this->convertExplicitKeys($request, $explictKeys);
 
-        $request = $this->convertPatternInput($request, $startsWith);
-
-        $request = $this->convertPatternInput($request, $endsWith);
-
-
-        $request = $this->convertPatternInput($request, $contains);
+        $request = $this->convertPatternInput($request, $patterns);
 
         return $request;
     }
@@ -101,9 +92,9 @@ class FormatterProcessor
 
     /**
      * Convert pattern input keys
-     * @param  Array $request
+     * @param  array $request
      * @param  array $formatters
-     * @return Array $request
+     * @return array $request
      */
     private function convertPatternInput($request, $formatters)
     {
@@ -137,7 +128,7 @@ class FormatterProcessor
      * Convert explicit input keys
      * @param  array $request
      * @param  array $explicitKeys
-     * @return array $requestInput
+     * @return array $request
      */
     private function convertExplicitKeys($request, $explictKeys)
     {
