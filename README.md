@@ -144,7 +144,7 @@ If the formatter method you want to call needs parameters then specify paramter 
 You could also define a method on your models and pass in `$this->attributes`  vs defining a mutator for each attribute.
 
 
-<strong>Note:</strong> If the request value is a single dimensional array, the formatter method will be applied to every value on the array element. If the request value has a nested array value, those  values will also be converted, anything nested deeper than that is not considered/converted.
+<strong>Note:</strong> If the request value is a single dimensional <strong>non associative</strong> array, the formatter method will be applied to every value on the array element. If the request value has a nested array value, those  values will also be converted, anything nested deeper than that is not considered/converted.
 
 # Methods are whitelisted
 
@@ -163,6 +163,21 @@ The above example is being explicit in its request keys, but you could also spec
     ];
 
     $convertedInput = Formatter::convert($formatters, $request->all());
+
+```
+
+<strong>Note: Pattern matching with nested associated arrays is not supported. You must be explicit with nested associative arrays formatters:</strong>
+
+
+```php
+
+
+$formatters=[
+
+   'applicant.*name*=>'titleCase' // this is not supported
+   'applicant.name'=>'titleCase' //this is. Were explicitly telling the formatter to format $request->input('applicant.name');
+
+];
 
 ```
 

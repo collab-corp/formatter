@@ -151,7 +151,10 @@ class FormatterProcessor
 
                 $method = str_before($formatterMethods, ":");
 
-                if (is_array($request[$input])) {
+
+                if (!is_null(data_get($request, $input)) && strpos($input, ".")) {
+                    data_set($request, $input, $this->callMethod($method, $params, data_get($request, $input)));
+                } elseif (is_array($request[$input])) {
                     $request[$input] = $this->handleArrayInput($request[$input], $method, $params);
                 } else {
                     $request[$input] = $this->callMethod($method, $params, $request[$input]);

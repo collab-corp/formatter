@@ -42,15 +42,15 @@ class MultipleFormattingTest extends TestCase
 
         $request = Formatter::convert($formatters, $request);
 
-        $this->assertEquals($request['name'], 'Peter Parker');
-        $this->assertEquals($request['phone'], '(123)456-7890');
-        $this->assertEquals($request['ssn'], '123-45-6789');
-        $this->assertEquals($request['slug'], 'about-us');
-        $this->assertEquals($request['price'], '$300.00');
-        $this->assertEquals($request['percent'], '0.30%');
-        $this->assertEquals($request['items'][0], '125%');
-        $this->assertEquals($request['items'][1], '323%');
-        $this->assertEquals($request['items'][2], '458%');
+        $this->assertEquals('Peter Parker', $request['name']);
+        $this->assertEquals('(123)456-7890', $request['phone']);
+        $this->assertEquals('123-45-6789', $request['ssn']);
+        $this->assertEquals('about-us', $request['slug']);
+        $this->assertEquals('$300.00', $request['price']);
+        $this->assertEquals('0.30%', $request['percent']);
+        $this->assertEquals('125%', $request['items'][0]);
+        $this->assertEquals('323%', $request['items'][1]);
+        $this->assertEquals('458%', $request['items'][2]);
     }
 
 
@@ -64,7 +64,10 @@ class MultipleFormattingTest extends TestCase
             'name*'=>'titleCase',
             '*phone*'=>'onlyNumbers|phone',
             '*number'=>'add:2|multiply:2',
-            '*items*'=>'onlyNumbers|add:2|finish:%'
+            '*items*'=>'onlyNumbers|add:2|finish:%',
+            'explicit'=>'finish:foo',
+            'nest.phone'=>'onlyNumbers',
+            'nest.foo'=>'add:3'
 
         ];
 
@@ -82,19 +85,29 @@ class MultipleFormattingTest extends TestCase
                 'test321',
                 'test456',
 
+            ],
+            'explicit'=>'',
+            'nest'=>[
+                'some_dollar'=>"$40",
+                'phone'=>'(830)374-5517',
+                'foo'=>'34',
             ]
         ];
 
+
         $request = Formatter::convert($formatters, $request);
 
-        $this->assertEquals($request['name'], 'Peter Parker');
-        $this->assertEquals($request['something_name'], 'peter parker');
-        $this->assertEquals($request['phone'], '(123)456-7890');
-        $this->assertEquals($request['cell_phone'], '(123)456-7890');
-        $this->assertEquals($request['number_something'], '2');
-        $this->assertEquals($request['something_number'], '8');
-        $this->assertEquals($request['some_items_foobar'][0], '125%');
-        $this->assertEquals($request['some_items_foobar'][1], '323%');
-        $this->assertEquals($request['some_items_foobar'][2], '458%');
+        $this->assertEquals('Peter Parker', $request['name']);
+        $this->assertEquals('peter parker', $request['something_name']);
+        $this->assertEquals('(123)456-7890', $request['phone']);
+        $this->assertEquals('(123)456-7890', $request['cell_phone']);
+        $this->assertEquals('2', $request['number_something']);
+        $this->assertEquals('8', $request['something_number']);
+        $this->assertEquals('125%', $request['some_items_foobar'][0]);
+        $this->assertEquals('323%', $request['some_items_foobar'][1]);
+        $this->assertEquals('458%', $request['some_items_foobar'][2]);
+        $this->assertEquals('8303745517', $request['nest']['phone']);
+        $this->assertEquals('37', $request['nest']['foo']);
+        $this->assertEquals('foo', $request['explicit']);
     }
 }

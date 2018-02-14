@@ -106,7 +106,7 @@ final class Formatter
     public static function convert(array $formatters, array $requestInput)
     {
         $explictKeys = array_filter($formatters, function ($key) use ($requestInput) {
-            return array_key_exists($key, $requestInput);
+            return array_key_exists($key, $requestInput) || !is_null(data_get($requestInput, $key));
         }, ARRAY_FILTER_USE_KEY);
 
         $startsWith = array_filter($formatters, function ($key) {
