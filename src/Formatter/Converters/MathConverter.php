@@ -6,10 +6,10 @@ use CollabCorp\Formatter\Formatter;
 
 class MathConverter extends Formatter
 {
-     /**
-     * Whitelist of the allowed methods to be called on this class.
-     * @var Array $whiteList
-     */
+    /**
+    * Whitelist of the allowed methods to be called on this class.
+    * @var Array $whiteList
+    */
     protected $whiteList =[
         //Math methods
         'decimals',
@@ -27,7 +27,6 @@ class MathConverter extends Formatter
      */
     public function decimals($numberOfPlaces = 2)
     {
-
         $this->value = number_format($this->value, $numberOfPlaces, ".", "");
 
         return $this;
@@ -40,7 +39,6 @@ class MathConverter extends Formatter
      */
     public function add($number, $scale = 0)
     {
-
         $this->value = bcadd($this->value, $number, $scale);
 
         return $this;
@@ -54,7 +52,6 @@ class MathConverter extends Formatter
      */
     public function subtract($number, $scale = 0)
     {
-
         $this->value = bcsub($this->value, $number, $scale);
 
         return $this;
@@ -79,7 +76,6 @@ class MathConverter extends Formatter
      */
     public function power($number, $scale = 0)
     {
-
         $this->value = bcpow($this->value, $number, $scale);
 
         return $this;
@@ -93,7 +89,6 @@ class MathConverter extends Formatter
      */
     public function divide($number, $scale = 0)
     {
-
         $this->value = bcdiv($this->value, $number, $scale);
 
         return $this;

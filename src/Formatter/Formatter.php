@@ -11,10 +11,10 @@ class Formatter
     use Macroable {
         __call as macroCall;
     }
-     /**
-     * Whitelist of the allowed methods to be called
-     * @var array $whiteList
-     */
+    /**
+    * Whitelist of the allowed methods to be called
+    * @var array $whiteList
+    */
     protected $whiteList =[];
     /**
      * The value that is being formatted
@@ -38,7 +38,6 @@ class Formatter
     public function __call($method, $args = [])
     {
         if (static::hasMacro($method)) {
-
             $this->setValue($this->macroCall($method, $args)->get());
 
             return $this;
@@ -109,7 +108,6 @@ class Formatter
      */
     public function setValue($value)
     {
-
         $this->value = $value;
         /*automatically treat empty strings as null,
         this is due to some issues with laravel's convert empty string to null middleware*/
@@ -147,12 +145,12 @@ class Formatter
         }
         return static::$manager = new ConverterManager(app());
     }
-     /**
-     * This allows the Formatter to be called as a function.
-     *
-     * @param  mixed $value
-     * @return mixed
-     */
+    /**
+    * This allows the Formatter to be called as a function.
+    *
+    * @param  mixed $value
+    * @return mixed
+    */
     public function __invoke($value = null)
     {
         if ($value) {
@@ -173,7 +171,6 @@ class Formatter
      */
     public static function call($method, $parameters, $previous = null)
     {
-
         $formatter = Formatter::implementing($method);
 
         throw_if(is_null($formatter), FormatterException::notFound($method));
@@ -192,7 +189,7 @@ class Formatter
     {
         return collect(static::manager()->available())->map(function ($driver) {
             return static::manager()->driver($driver);
-        })->first(function ($formatter) use($method) {
+        })->first(function ($formatter) use ($method) {
             return method_exists($formatter, $method) && $formatter->whitelists($method);
         });
     }
@@ -222,5 +219,4 @@ class Formatter
 
         return collect($request);
     }
-
 }

@@ -18,8 +18,6 @@ class FormatterProcessor
      */
     public function process($request, $explicitKeys, $patterns)
     {
-
-
         $request = $this->convertExplicitKeys($request, $explicitKeys);
 
         $request = $this->convertPatternInput($request, $patterns);
@@ -27,12 +25,12 @@ class FormatterProcessor
         return $request;
     }
 
-     /**
-     * Convert pattern input keys
-     * @param  array $request
-     * @param  array $formatters
-     * @return array $request
-     */
+    /**
+    * Convert pattern input keys
+    * @param  array $request
+    * @param  array $formatters
+    * @return array $request
+    */
     private function convertPatternInput($request, $formatters)
     {
         foreach ($formatters as $input => $formattersToProcess) {
@@ -44,7 +42,6 @@ class FormatterProcessor
                 $formatters = explode('|', $formattersToProcess);
 
                 foreach ($formatters as $formatterMethods) {
-
                     $details = $this->extractFormatterDetails($formatterMethods);
 
                     $params = $details['params'];
@@ -53,7 +50,6 @@ class FormatterProcessor
                     if (is_array($request[$inputKey])) {
                         $request[$inputKey] = $this->handleArrayInput($request[$inputKey], $method, $params);
                     } else {
-
                         $request[$inputKey] = Formatter::call($method, $params, $request[$inputKey]);
                     }
                 }
@@ -71,19 +67,18 @@ class FormatterProcessor
      */
     private function extractFormatterDetails($iteration)
     {
-
         $formatterMethods = trim($iteration, "|");
         return [
             'params'=>strpos($formatterMethods, ":") ? explode(",", str_after($formatterMethods, ":")) : [],
             'method'=>str_before($formatterMethods, ":")
         ];
     }
-   /**
-     * Convert explicit input keys
-     * @param  array $request
-     * @param  array $explicitKeys
-     * @return array $request
-     */
+    /**
+      * Convert explicit input keys
+      * @param  array $request
+      * @param  array $explicitKeys
+      * @return array $request
+      */
     private function convertExplicitKeys($request, $explictKeys)
     {
         foreach ($explictKeys as $input => $formatters) {
@@ -129,7 +124,4 @@ class FormatterProcessor
 
         return $newValues;
     }
-
-
-
 }
