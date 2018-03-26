@@ -4,27 +4,28 @@ use Carbon\Carbon;
 use CollabCorp\Formatter\Formatter;
 use CollabCorp\Formatter\Tests\TestCase;
 
-class StringFormatterTest extends TestCase
+class StringConverterTest extends TestCase
 {
+
     public function setUp()
     {
         $this->formatter = new Formatter('This is a test string! 123 test foobar!');
+
     }
-
-
     /**
      * @test
      */
-    public function stringFormatterStartMethod()
+    public function startMethod()
     {
         $startWith ='Im a prefix that is added: original sentence->';
         $this->assertEquals($startWith.$this->formatter->get(), $this->formatter->start($startWith)->get());
+
     }
 
     /**
      * @test
      */
-    public function stringFormatterSsnMethod()
+    public function ssnMethod()
     {
         $this->formatter->setValue('123456789');
         $this->assertEquals('123-45-6789', $this->formatter->ssn()->get());
@@ -33,7 +34,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterPhoneMethod()
+    public function phoneMethod()
     {
         $this->formatter->setValue('1234567890');
         $this->assertEquals('(123)456-7890', $this->formatter->phone()->get());
@@ -42,7 +43,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterTruncateMethod()
+    public function truncateMethod()
     {
         $this->assertEquals('This is a test string', $this->formatter->truncate(18)->get());
     }
@@ -52,7 +53,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterFinishMethod()
+    public function finishMethod()
     {
         $endWith ="<--original string. I was added at the end only if i didnt exist:D";
         $this->assertEquals($this->formatter->get().$endWith, $this->formatter->finish($endWith)->get());
@@ -62,7 +63,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterBeforeMethod()
+    public function beforeMethod()
     {
         $before ="123 test";
         $this->assertEquals('This is a test string! ', $this->formatter->before($before)->get());
@@ -72,7 +73,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterAfterMethod()
+    public function afterMethod()
     {
         $after ="This is a test string! ";
         $this->assertEquals('123 test foobar!', $this->formatter->after($after)->get());
@@ -81,7 +82,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterPrefixMethod()
+    public function prefixMethod()
     {
         $prefix ="$";
         $this->formatter->setValue("500.75");
@@ -91,7 +92,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterSuffixMethod()
+    public function suffixMethod()
     {
         $suffix ="%";
         $this->formatter->setValue("50");
@@ -101,15 +102,16 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterCamelCaseMethod()
+    public function camelCaseMethod()
     {
         $this->formatter->setValue("foo bar");
+
         $this->assertEquals('fooBar', $this->formatter->camelCase()->get());
     }
     /**
      * @test
      */
-    public function stringFormatterKebabCaseMethod()
+    public function kebabCaseMethod()
     {
         $this->formatter->setValue("foo bar");
         $this->assertEquals('foo-bar', $this->formatter->kebabCase()->get());
@@ -119,7 +121,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterSnakeCaseMethod()
+    public function snakeCaseMethod()
     {
         $this->formatter->setValue("foo bar");
         $this->assertEquals('foo_bar', $this->formatter->snakeCase()->get());
@@ -128,7 +130,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterTitleCaseMethod()
+    public function titleCaseMethod()
     {
         $this->formatter->setValue("foo bar");
         $this->assertEquals('Foo Bar', $this->formatter->titleCase()->get());
@@ -137,7 +139,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterSlugMethod()
+    public function slugMethod()
     {
         $this->formatter->setValue("foo bar");
         $this->assertEquals('foo-bar', $this->formatter->slug()->get());
@@ -146,7 +148,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterStudlyCaseMethod()
+    public function studlyCaseMethod()
     {
         $this->formatter->setValue("foo bar");
         $this->assertEquals('FooBar', $this->formatter->studlyCase()->get());
@@ -155,7 +157,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterPluralMethod()
+    public function pluralMethod()
     {
         $this->formatter->setValue("child");
         $this->assertEquals('children', $this->formatter->plural()->get());
@@ -164,7 +166,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterLimitMethod()
+    public function limitMethod()
     {
         $this->formatter->setValue("children");
         $this->assertEquals('child', $this->formatter->limit(5)->get());
@@ -173,7 +175,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterReplaceMethod()
+    public function replaceMethod()
     {
         $this->formatter->setValue("i will be a string that says");
         $this->assertEquals('foobar', $this->formatter->replace("i will be a string that says", "foobar")->get());
@@ -181,7 +183,7 @@ class StringFormatterTest extends TestCase
     /**
     * @test
     */
-    public function stringFormatterOnlyNumbersMethod()
+    public function onlyNumbersMethod()
     {
         $this->formatter->setValue("sdfdsfsdf123");
         $this->assertEquals('123', $this->formatter->onlyNumbers()->get());
@@ -190,7 +192,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterOnlyLettersMethod()
+    public function onlyLettersMethod()
     {
         $this->formatter->setValue("test*(&*#(*$&123");
         $this->assertEquals('test', $this->formatter->onlyLetters()->get());
@@ -198,7 +200,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterAlphaNumericMethod()
+    public function alphaNumericMethod()
     {
         $this->formatter->setValue("test*(&*#(*$&123  ");
         $this->assertEquals('test123', $this->formatter->onlyAlphaNumeric()->get());
@@ -210,7 +212,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterTrimMethod()
+    public function trimMethod()
     {
         $this->formatter->setValue('$$$$moneyz$$$$$');
         $this->assertEquals('moneyz', $this->formatter->trim("$")->get());
@@ -218,7 +220,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterRTrimMethod()
+    public function rTrimMethod()
     {
         $this->formatter->setValue('$$$$moneyz$$$$$');
         $this->assertEquals('$$$$moneyz', $this->formatter->rtrim("$")->get());
@@ -226,7 +228,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterLTrimMethod()
+    public function lTrimMethod()
     {
         $this->formatter->setValue('$$$$moneyz$$$$$');
         $this->assertEquals('moneyz$$$$$', $this->formatter->ltrim("$")->get());
@@ -234,7 +236,7 @@ class StringFormatterTest extends TestCase
     /**
      * @test
      */
-    public function stringFormatterInsertEveryMethod()
+    public function insertEveryMethod()
     {
         $this->formatter->setValue('1234567890123456');
         $this->assertEquals('1234 5678 9012 3456', $this->formatter->insertEvery(4, " ")->rtrim()->get());

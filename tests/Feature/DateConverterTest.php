@@ -11,7 +11,6 @@ class FormatterTest extends TestCase
         $this->formatter = new Formatter('12/22/2030');
         $this->formatter = $this->formatter->toCarbon();
     }
-  
 
     /**
      * @test
@@ -57,6 +56,7 @@ class FormatterTest extends TestCase
      */
     public function formatterCanCallCarbonSubMethods()
     {
+
         $this->formatter = (new Formatter('2030-12-22 03:40:02'))->toCarbon();
 
         $this->assertEquals('2030-12-22 03:40:00', $this->formatter->subSeconds(2)->get()->toDateTimeString());

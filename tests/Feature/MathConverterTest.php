@@ -4,7 +4,7 @@ use Carbon\Carbon;
 use CollabCorp\Formatter\Formatter;
 use CollabCorp\Formatter\Tests\TestCase;
 
-class MathFormatterTest extends TestCase
+class MathConverterTest extends TestCase
 {
     public function setUp()
     {
@@ -14,61 +14,53 @@ class MathFormatterTest extends TestCase
     /**
      * @test
      */
-    public function mathFormatterCanAddNumberToValue()
+    public function addMethod()
     {
         $this->assertEquals(22, $this->formatter->add(2)->get());
-        //test the scaling
-        $this->assertEquals(24.00, $this->formatter->add(2, 2)->get());
+
     }
 
 
     /**
      * @test
      */
-    public function mathFormatterCanSubtractNumberToValue()
+    public function subtractMethod()
     {
         $this->assertEquals(18, $this->formatter->subtract(2)->get());
 
-        //test scaling
-        $this->assertEquals(16.00, $this->formatter->subtract(2, 2)->get());
+
     }
 
     /**
      * @test
      */
-    public function mathFormatterCanDivideValueByANumber()
+    public function divideMethod()
     {
         $this->assertEquals(10, $this->formatter->divide(2)->get());
-        //test the scaling
-        $this->assertEquals(5.00, $this->formatter->divide(2, 2)->get());
+
     }
 
 
     /**
      * @test
      */
-    public function mathFormatterCanMultiplyValueByANumber()
+    public function multiplyMethod()
     {
         $this->assertEquals(40, $this->formatter->multiply(2)->get());
 
-        //test scaling
-        $this->assertEquals(80.00, $this->formatter->multiply(2, 2)->get());
     }
     /**
      * @test
      */
-    public function mathFormatterCanRaiseValueToPower()
+    public function powerMethod()
     {
         $this->assertEquals(400, $this->formatter->power(2)->get());
-
-        //test scaling
-        $this->assertEquals(160000.00, $this->formatter->power(2, 2)->get());
     }
 
     /**
     * @test
     */
-    public function mathFormatterCanFormatDecimalPlaces()
+    public function decimalsMethod()
     {
         $this->assertEquals(20.000, $this->formatter->decimals(3)->get());
     }
@@ -76,21 +68,20 @@ class MathFormatterTest extends TestCase
     /**
      * @test
      */
-    public function mathFormatterCanConvertValueToDecimalPercent()
+    public function percentageMethod()
     {
         //test scaling
         $this->assertEquals(0.20, $this->formatter->percentage()->get());
 
         //reset the value
         $this->formatter->setValue(10);
-        //scaling 3 places
-        $this->assertEquals(0.100, $this->formatter->percentage(3)->get());
+
     }
 
     /**
      * @test
      */
-    public function mathFormatterCanRunMultipleCalculations()
+    public function multipleCalculations()
     {
         $this->assertEquals(9, $this->formatter->add(2)->subtract(4)->divide(2)->get());
     }

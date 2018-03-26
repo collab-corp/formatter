@@ -36,11 +36,16 @@ class MultipleFormattingTest extends TestCase
                 'test123',
                 'test321',
                 'test456',
+                [
+                    'test123',
+                    'test321'
+                ]
 
             ]
         ];
 
         $request = Formatter::convert($formatters, $request);
+
 
         $this->assertEquals('Peter Parker', $request['name']);
         $this->assertEquals('(123)456-7890', $request['phone']);
@@ -51,6 +56,8 @@ class MultipleFormattingTest extends TestCase
         $this->assertEquals('125%', $request['items'][0]);
         $this->assertEquals('323%', $request['items'][1]);
         $this->assertEquals('458%', $request['items'][2]);
+        $this->assertEquals('125%', $request['items'][3][0]);
+        $this->assertEquals('323%', $request['items'][3][1]);
     }
 
 

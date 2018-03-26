@@ -1,17 +1,55 @@
 <?php
 
-namespace CollabCorp\Formatter\Traits;
+namespace CollabCorp\Formatter\Converters;
 
+use CollabCorp\Formatter\Formatter;
 use Illuminate\Support\Str;
 
-trait HandlesStringConversions
+class StringConverter extends Formatter
 {
+     /**
+     * Whitelist of the allowed methods to be called on this class.
+     * @var Array $whiteList
+     */
+    protected $whiteList =[
+        //String methods
+        'after',
+        'bcrypt',
+        'before',
+        'camelCase',
+        'decrypt',
+        'encrypt',
+        'finish',
+        'insertEvery',
+        'kebabCase',
+        'phone',
+        'limit',
+        'ltrim',
+        'onlyAlphaNumeric',
+        'onlyNumbers',
+        'onlyLetters',
+        'plural',
+        'prefix',
+        'replace',
+        'rtrim',
+        'slug',
+        'snakeCase',
+        'ssn',
+        'start',
+        'studlyCase',
+        'suffix',
+        'titleCase',
+        'trim',
+        'truncate',
+        'url'
+    ];
     /**
      * Change a 9 numeric value to a social security format i.e. xxx-xx-xxxx
      * @return CollabCorp\Formatter\Formatter instance
      */
     public function ssn()
     {
+
         if (strlen($this->onlyNumbers($this->value)->get()) == '9') {
             $this->value = $this->onlyNumbers($this->value)->get();
             $this->value = substr($this->value, 0, 3).'-'.substr($this->value, 3, 2).'-'.substr($this->value, 5, strlen($this->value));
@@ -41,7 +79,7 @@ trait HandlesStringConversions
     }
     /**
      * Add the given value to our value if it does not already end with the value
-     * @param String $finish
+     * @param string $finish
      * @return CollabCorp\Formatter\Formatter instance
      */
     public function finish($finish)
@@ -51,7 +89,7 @@ trait HandlesStringConversions
     }
     /**
      * Add the given value to our value if it does not already start with the value
-     * @param String $start
+     * @param string $start
      * @return CollabCorp\Formatter\Formatter instance
      */
     public function start($start)
@@ -61,7 +99,7 @@ trait HandlesStringConversions
     }
     /**
      * Get everything before the specified value
-     * @param String $before
+     * @param string $before
      * @return CollabCorp\Formatter\Formatter instance
      */
     public function before($before)
@@ -71,7 +109,7 @@ trait HandlesStringConversions
     }
     /**
      * Get everything after the specified value
-     * @param String $before
+     * @param string $before
      * @return CollabCorp\Formatter\Formatter instance
      */
     public function after($after)
@@ -81,7 +119,7 @@ trait HandlesStringConversions
     }
     /**
      * Prefix something onto our value
-     * @param String $prefix
+     * @param string $prefix
      * @return CollabCorp\Formatter\Formatter instance
      */
     public function prefix($prefix)
@@ -91,7 +129,7 @@ trait HandlesStringConversions
     }
     /**
      * Add a suffix onto our value
-     * @param String $suffix
+     * @param string $suffix
      * @return CollabCorp\Formatter\Formatter instance
      */
     public function suffix($suffix)
@@ -106,6 +144,7 @@ trait HandlesStringConversions
      */
     public function camelCase()
     {
+
         $this->value = Str::camel($this->value);
 
         return $this;
@@ -179,7 +218,6 @@ trait HandlesStringConversions
      */
     public function phone()
     {
-        $this->throwExceptionIfNonNumeric('phone');
 
         if (strlen($this->value) == '11') {
             $this->value = substr($this->value, 0, 1).'('.substr($this->value, 1, 3).')'.substr($this->value, 4, 3).'-'.substr($this->value, 7);
@@ -221,8 +259,8 @@ trait HandlesStringConversions
     /**
      * Limit the string by number of specified characters
      * and append a string
-     * @param  String $limit
-     * @param  String $append
+     * @param  string $limit
+     * @param  string $append
      * @return CollabCorp\Formatter\Formatter instance
      */
     public function limit($limit = null, $append = '')
@@ -235,8 +273,8 @@ trait HandlesStringConversions
     }
     /**
      * Replace all the given characters with the given character
-     * @param  String $search
-     * @param  String $replace
+     * @param  string $search
+     * @param  string $replace
      * @return CollabCorp\Formatter\Formatter instance
      */
     public function replace($search, $replace = '')
@@ -284,14 +322,17 @@ trait HandlesStringConversions
      */
     public function onlyAlphaNumeric($allowSpaces = false)
     {
-        $regex = $allowSpaces ? "/[^0-9a-zA-Z ]/":"/[^0-9a-zA-Z]/";
+
+        $regex = $allowSpaces==true ? "/[^0-9a-zA-Z ]/":"/[^0-9a-zA-Z]/";
+
         $this->value = preg_replace($regex, "", $this->value);
+
         return $this;
     }
 
     /**
      * Remove Leading and ending characters
-     * @param  String $trimOff
+     * @param  string $trimOff
      * @return CollabCorp\Formatter\Formatter instance
      */
     public function trim($trimOff = ' ')
@@ -302,7 +343,7 @@ trait HandlesStringConversions
     }
     /**
      * Remove leading characters
-     * @param  String $trimOff
+     * @param  string $trimOff
      * @return CollabCorp\Formatter\Formatter instance
      */
     public function ltrim($trimOff = ' ')
@@ -313,7 +354,7 @@ trait HandlesStringConversions
     }
     /**
      * Remove ending characters
-     * @param  String $trimOff
+     * @param  string $trimOff
      * @return CollabCorp\Formatter\Formatter instance
      */
     public function rtrim($trimOff = ' ')

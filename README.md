@@ -143,9 +143,6 @@ If the formatter method you want to call needs parameters then specify paramter 
 
 You could also define a method on your models and pass in `$this->attributes`  vs defining a mutator for each attribute.
 
-
-<strong>Note:</strong> If the request value is a single dimensional <strong>non associative</strong> array, the formatter method will be applied to every value on the array element. If the request value has a nested array value, those  values will also be converted, anything nested deeper than that is not considered/converted.
-
 # Methods are whitelisted
 
 By default all formatter methods are checked against a whitelist that they are added to. This is just a precautionary measure to avoid allowing client side requests to make calls to formatter class methods. Example:Consider a UI that allows clients to determine formatter methods. The same goes for macro added methods. If the method is not in the whitelist or was not added via the macro trait, then naturally they are considered undefined methods.

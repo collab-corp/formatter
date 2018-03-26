@@ -1,11 +1,36 @@
 <?php
 
-namespace CollabCorp\Formatter\Traits;
+namespace CollabCorp\Formatter\Converters;
 
 use Carbon\Carbon;
+use CollabCorp\Formatter\Formatter;
 
-trait HandlesDateConversions
+class DateConverter extends Formatter
 {
+     /**
+     * Whitelist of the allowed methods to be called on this class.
+     * @var Array $whiteList
+     */
+    protected $whiteList =[
+        //Date methods
+        'toCarbon',
+        'setTimezone',
+        'format',
+        'addYears',
+        'addMonths',
+        'addWeeks',
+        'addDays',
+        'addHours',
+        'addMinutes',
+        'addSeconds',
+        'subYears',
+        'subMonths',
+        'subWeeks',
+        'subDays',
+        'subHours',
+        'subMinutes',
+        'subSeconds'
+    ];
     /**
      * Convert our carbon instance to a date format
      * @param String $dateFormat
@@ -38,7 +63,6 @@ trait HandlesDateConversions
     {
         $this->value = $this->value->setTimezone($tz);
 
-
         return $this;
     }
     /**
@@ -48,7 +72,6 @@ trait HandlesDateConversions
      */
     public function addYears($years)
     {
-        $this->throwExceptionIfNonNumeric('addYears', $years);
         $this->value = $this->value->addYears($years);
 
         return $this;
@@ -60,7 +83,6 @@ trait HandlesDateConversions
      */
     public function addMonths($months)
     {
-        $this->throwExceptionIfNonNumeric('addMonths', $months);
         $this->value = $this->value->addMonths($months);
 
         return $this;
@@ -72,7 +94,6 @@ trait HandlesDateConversions
      */
     public function addWeeks($weeks)
     {
-        $this->throwExceptionIfNonNumeric('addWeeks', $weeks);
         $this->value = $this->value->addWeeks($weeks);
 
         return $this;
@@ -85,7 +106,6 @@ trait HandlesDateConversions
     */
     public function addDays($days)
     {
-        $this->throwExceptionIfNonNumeric('addDays', $days);
         $this->value = $this->value->addDays($days);
 
 
@@ -99,7 +119,6 @@ trait HandlesDateConversions
     */
     public function addHours($hours)
     {
-        $this->throwExceptionIfNonNumeric('addHours', $hours);
         $this->value = $this->value->addHours($hours);
 
         return $this;
@@ -112,7 +131,6 @@ trait HandlesDateConversions
      */
     public function addMinutes($minutes)
     {
-        $this->throwExceptionIfNonNumeric('addMinutes', $minutes);
         $this->value = $this->value->addMinutes($minutes);
 
         return $this;
@@ -124,7 +142,6 @@ trait HandlesDateConversions
     */
     public function addSeconds($seconds)
     {
-        $this->throwExceptionIfNonNumeric('addSeconds', $seconds);
 
         $this->value = $this->value->addSeconds($seconds);
 
@@ -138,7 +155,7 @@ trait HandlesDateConversions
      */
     public function subYears($years)
     {
-        $this->throwExceptionIfNonNumeric('subYears', $years);
+
 
         $this->value = $this->value->subYears($years);
 
@@ -152,7 +169,7 @@ trait HandlesDateConversions
     */
     public function subMonths($months)
     {
-        $this->throwExceptionIfNonNumeric('subMonths', $months);
+
 
         $this->value = $this->value->subMonths($months);
 
@@ -165,7 +182,7 @@ trait HandlesDateConversions
      */
     public function subWeeks($weeks)
     {
-        $this->throwExceptionIfNonNumeric('subWeeks', $weeks);
+
         $this->value = $this->value->subWeeks($weeks);
 
         return $this;
@@ -178,7 +195,7 @@ trait HandlesDateConversions
     */
     public function subDays($days)
     {
-        $this->throwExceptionIfNonNumeric('subDays', $days);
+
         $this->value = $this->value->subDays($days);
 
         return $this;
@@ -191,7 +208,7 @@ trait HandlesDateConversions
     */
     public function subHours($hours)
     {
-        $this->throwExceptionIfNonNumeric('subHours', $hours);
+
         $this->value = $this->value->subHours($hours);
 
         return $this;
@@ -204,7 +221,7 @@ trait HandlesDateConversions
      */
     public function subMinutes($minutes)
     {
-        $this->throwExceptionIfNonNumeric('subMinutes', $minutes);
+
         $this->value = $this->value->subMinutes($minutes);
 
         return $this;
@@ -216,7 +233,7 @@ trait HandlesDateConversions
     */
     public function subSeconds($seconds)
     {
-        $this->throwExceptionIfNonNumeric('subSeconds', $seconds);
+
         $this->value = $this->value->subSeconds($seconds);
 
         return $this;

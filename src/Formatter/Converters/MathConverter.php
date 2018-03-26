@@ -1,9 +1,25 @@
 <?php
 
-namespace CollabCorp\Formatter\Traits;
+namespace CollabCorp\Formatter\Converters;
 
-trait HandlesMathConversions
+use CollabCorp\Formatter\Formatter;
+
+class MathConverter extends Formatter
 {
+     /**
+     * Whitelist of the allowed methods to be called on this class.
+     * @var Array $whiteList
+     */
+    protected $whiteList =[
+        //Math methods
+        'decimals',
+        'add',
+        'subtract',
+        'multiply',
+        'divide',
+        'power',
+        'percentage'
+    ];
     /**
      * Make our value be a decimal of specified places
      * @param  $numberOfPlaces
@@ -11,8 +27,6 @@ trait HandlesMathConversions
      */
     public function decimals($numberOfPlaces = 2)
     {
-        $this->throwExceptionIfNonNumeric('decimals');
-        $this->throwExceptionIfNonNumeric('decimals', $numberOfPlaces);
 
         $this->value = number_format($this->value, $numberOfPlaces, ".", "");
 
@@ -26,9 +40,6 @@ trait HandlesMathConversions
      */
     public function add($number, $scale = 0)
     {
-        $this->throwExceptionIfNonNumeric('add');
-        $this->throwExceptionIfNonNumeric('add', $number);
-        $this->throwExceptionIfNonNumeric('add', $scale);
 
         $this->value = bcadd($this->value, $number, $scale);
 
@@ -43,9 +54,6 @@ trait HandlesMathConversions
      */
     public function subtract($number, $scale = 0)
     {
-        $this->throwExceptionIfNonNumeric('subtract');
-        $this->throwExceptionIfNonNumeric('subtract', $number);
-        $this->throwExceptionIfNonNumeric('subtract', $scale);
 
         $this->value = bcsub($this->value, $number, $scale);
 
@@ -60,11 +68,7 @@ trait HandlesMathConversions
      */
     public function multiply($number, $scale = 0)
     {
-        $this->throwExceptionIfNonNumeric('multiply');
-        $this->throwExceptionIfNonNumeric('multiply', $number);
-        $this->throwExceptionIfNonNumeric('multiply', $scale);
         $this->value = bcmul($this->value, $number, $scale);
-
         return $this;
     }
     /**
@@ -75,9 +79,6 @@ trait HandlesMathConversions
      */
     public function power($number, $scale = 0)
     {
-        $this->throwExceptionIfNonNumeric('power');
-        $this->throwExceptionIfNonNumeric('power', $number);
-        $this->throwExceptionIfNonNumeric('power', $scale);
 
         $this->value = bcpow($this->value, $number, $scale);
 
@@ -92,9 +93,6 @@ trait HandlesMathConversions
      */
     public function divide($number, $scale = 0)
     {
-        $this->throwExceptionIfNonNumeric('divide');
-        $this->throwExceptionIfNonNumeric('divide', $number);
-        $this->throwExceptionIfNonNumeric('divide', $scale);
 
         $this->value = bcdiv($this->value, $number, $scale);
 
@@ -108,9 +106,6 @@ trait HandlesMathConversions
      */
     public function percentage($scale = 2)
     {
-        $this->throwExceptionIfNonNumeric('percentage');
-        $this->throwExceptionIfNonNumeric('percentage', $scale);
-
         $this->value = $this->divide(100, $scale)->get();
 
         return $this;
