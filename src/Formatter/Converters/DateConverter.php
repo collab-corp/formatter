@@ -7,10 +7,10 @@ use CollabCorp\Formatter\Formatter;
 
 class DateConverter extends Formatter
 {
-     /**
-     * Whitelist of the allowed methods to be called on this class.
-     * @var Array $whiteList
-     */
+    /**
+    * Whitelist of the allowed methods to be called on this class.
+    * @var Array $whiteList
+    */
     protected $whiteList =[
         //Date methods
         'toCarbon',
@@ -142,7 +142,6 @@ class DateConverter extends Formatter
     */
     public function addSeconds($seconds)
     {
-
         $this->value = $this->value->addSeconds($seconds);
 
         return $this;
@@ -155,8 +154,6 @@ class DateConverter extends Formatter
      */
     public function subYears($years)
     {
-
-
         $this->value = $this->value->subYears($years);
 
         return $this;
@@ -169,8 +166,6 @@ class DateConverter extends Formatter
     */
     public function subMonths($months)
     {
-
-
         $this->value = $this->value->subMonths($months);
 
         return $this;
@@ -182,7 +177,6 @@ class DateConverter extends Formatter
      */
     public function subWeeks($weeks)
     {
-
         $this->value = $this->value->subWeeks($weeks);
 
         return $this;
@@ -195,7 +189,6 @@ class DateConverter extends Formatter
     */
     public function subDays($days)
     {
-
         $this->value = $this->value->subDays($days);
 
         return $this;
@@ -208,7 +201,6 @@ class DateConverter extends Formatter
     */
     public function subHours($hours)
     {
-
         $this->value = $this->value->subHours($hours);
 
         return $this;
@@ -221,7 +213,6 @@ class DateConverter extends Formatter
      */
     public function subMinutes($minutes)
     {
-
         $this->value = $this->value->subMinutes($minutes);
 
         return $this;
@@ -233,7 +224,6 @@ class DateConverter extends Formatter
     */
     public function subSeconds($seconds)
     {
-
         $this->value = $this->value->subSeconds($seconds);
 
         return $this;

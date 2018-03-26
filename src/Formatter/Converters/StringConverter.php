@@ -7,10 +7,10 @@ use Illuminate\Support\Str;
 
 class StringConverter extends Formatter
 {
-     /**
-     * Whitelist of the allowed methods to be called on this class.
-     * @var Array $whiteList
-     */
+    /**
+    * Whitelist of the allowed methods to be called on this class.
+    * @var Array $whiteList
+    */
     protected $whiteList =[
         //String methods
         'after',
@@ -49,7 +49,6 @@ class StringConverter extends Formatter
      */
     public function ssn()
     {
-
         if (strlen($this->onlyNumbers($this->value)->get()) == '9') {
             $this->value = $this->onlyNumbers($this->value)->get();
             $this->value = substr($this->value, 0, 3).'-'.substr($this->value, 3, 2).'-'.substr($this->value, 5, strlen($this->value));
@@ -144,7 +143,6 @@ class StringConverter extends Formatter
      */
     public function camelCase()
     {
-
         $this->value = Str::camel($this->value);
 
         return $this;
@@ -218,7 +216,6 @@ class StringConverter extends Formatter
      */
     public function phone()
     {
-
         if (strlen($this->value) == '11') {
             $this->value = substr($this->value, 0, 1).'('.substr($this->value, 1, 3).')'.substr($this->value, 4, 3).'-'.substr($this->value, 7);
         } elseif (strlen($this->value) == '10') {
@@ -322,7 +319,6 @@ class StringConverter extends Formatter
      */
     public function onlyAlphaNumeric($allowSpaces = false)
     {
-
         $regex = $allowSpaces==true ? "/[^0-9a-zA-Z ]/":"/[^0-9a-zA-Z]/";
 
         $this->value = preg_replace($regex, "", $this->value);
