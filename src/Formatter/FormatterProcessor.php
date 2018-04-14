@@ -50,7 +50,8 @@ class FormatterProcessor
                     if (is_array($request[$inputKey])) {
                         $request[$inputKey] = $this->handleArrayInput($request[$inputKey], $method, $params);
                     } else {
-                        $request[$inputKey] = Formatter::call($method, $params, $request[$inputKey]);
+                        //always return the value not the class
+                        $request[$inputKey] = (string)Formatter::call($method, $params, $request[$inputKey]);
                     }
                 }
             }
@@ -91,11 +92,11 @@ class FormatterProcessor
 
                 $method = $details['method'];
                 if (!is_null(data_get($request, $input)) && strpos($input, ".")) {
-                    data_set($request, $input, Formatter::call($method, $params, data_get($request, $input)));
+                    data_set($request, $input, (string)Formatter::call($method, $params, data_get($request, $input)));
                 } elseif (is_array($request[$input])) {
                     $request[$input] = $this->handleArrayInput($request[$input], $method, $params);
                 } else {
-                    $request[$input] = Formatter::call($method, $params, $request[$input]);
+                    $request[$input] = (string)Formatter::call($method, $params, $request[$input]);
                 }
             }
         }
@@ -118,7 +119,7 @@ class FormatterProcessor
             if (is_array($value)) {
                 $newValues[$key] = $this->handleArrayInput($value, $method, $params);
             } else {
-                $newValues[$key] =  Formatter::call($method, $params, $value);
+                $newValues[$key] =  (string)Formatter::call($method, $params, $value);
             }
         }
 
