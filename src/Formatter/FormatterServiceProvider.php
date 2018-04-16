@@ -14,6 +14,6 @@ class FormatterServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('collab-corp.formatter', \CollabCorp\Formatters\Formatter::class);
+        $this->app->bind('collab-corp.formatter', \CollabCorp\Formatter\Formatter::class);
     }
 }
