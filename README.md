@@ -1,4 +1,6 @@
-# Formatter [![Build Status](https://travis-ci.org/collab-corp/formatter.svg?branch=master)](https://travis-ci.org/collab-corp/formatter)
+# Formatter
+[![Build Status](https://travis-ci.org/collab-corp/formatter.svg?branch=master)](https://travis-ci.org/collab-corp/formatter)
+[![StyleCI](https://styleci.io/repos/119897298/shield?branch=master)](https://styleci.io/repos/119897298)
 
 A Laravel formatting utility package.
 
@@ -145,7 +147,7 @@ You could also define a method on your models and pass in `$this->attributes`  v
 
 # Methods are whitelisted
 
-By default all formatter methods are checked against a whitelist that they are added to. This is just a precautionary measure to avoid allowing client side requests to make calls to formatter class methods. Example:Consider a UI that allows clients to determine formatter methods. The same goes for macro added methods. If the method is not in the whitelist or was not added via the macro trait, then naturally they are considered undefined methods.
+By default all formatter methods are checked against a whitelist at run time. This is just a precautionary measure to avoid allowing client side requests to make calls to formatter class methods. Example:Consider a UI that allows clients to determine formatter methods. The same goes for macro added methods. If the method is not in the whitelist or was not added via the macro trait, then naturally they are considered undefined methods.
 
 ## Patterns
 The above example is being explicit in its request keys, but you could also specify pattern input keys using asterisk to  match input keys and process them if they match the pattern:
@@ -171,7 +173,7 @@ The above example is being explicit in its request keys, but you could also spec
 
 $formatters=[
 
-   'applicant.*name*=>'titleCase' // this is not supported
+   'applicant.*name*'=>'titleCase' // this is not supported
    'applicant.name'=>'titleCase' //this is. Were explicitly telling the formatter to format $request->input('applicant.name');
 
 ];
