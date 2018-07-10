@@ -495,7 +495,7 @@ Note: These simply are methods called using the Carbon Library. These are the on
     Formatter::create('foobar')->replace('foo', 'poo')->get();
     ```
   * ### onlyAlphaNumeric
-    replace non alphanumeric characters, including spaces, unless specified by 1st parameter:
+    replace non alphanumeric characters, including spaces, unless specified by 2nd parameter:
     ```php
     //'foobar123test'
     Formatter::create('foobar123 &$*&$(#(*test')->onlyAlphaNumeric()->get();
@@ -540,7 +540,7 @@ Note: These simply are methods called using the Carbon Library. These are the on
     ```
 
   * ### url
-    removes all ending spaces/characters from the value:
+    Creates a url string of your value using laravel's url() helper:
     ```php
     //'http://{APP_URL}/something'
     Formatter::create('something')->url()->get();
