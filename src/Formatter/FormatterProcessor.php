@@ -2,13 +2,13 @@
 
 namespace CollabCorp\Formatter;
 
+use CollabCorp\Formatter\Concerns\ProcessesMethodCallsOnArrays;
 use CollabCorp\Formatter\Formatter;
 use Illuminate\Support\Str;
 
 class FormatterProcessor
 {
-
-
+    use ProcessesMethodCallsOnArrays;
     /**
      * Process the formatters and convert the input
      * @param array $request
@@ -33,22 +33,23 @@ class FormatterProcessor
     */
     private function convertPatternInput($request, $formatters)
     {
-        foreach ($formatters as $input => $formattersToProcess) {
+        foreach ($formatters as $input => $methods) {
             $matches = array_filter($request, function ($key) use ($input) {
                 return Str::is($input, $key);
             }, ARRAY_FILTER_USE_KEY);
 
-            foreach ($matches as $inputKey => $inputValue) {
-                $formatters = explode('|', $formattersToProcess);
 
-                foreach ($formatters as $formatterMethods) {
-                    $details = $this->extractFormatterDetails($formatterMethods);
+            foreach ($matches as $inputKey => $inputValue) {
+                $formatters = explode('|', trim($methods, "|"));
+
+                foreach ($formatters as $method) {
+                    $details = $this->extractIterationDetails($method);
 
                     $params = $details['params'];
 
                     $method = $details['method'];
                     if (is_array($request[$inputKey])) {
-                        $request[$inputKey] = $this->handleArrayInput($request[$inputKey], $method, $params);
+                        $request[$inputKey] = $this->handleMethodCallsOnArrayInput($request[$inputKey], $method, $params);
                     } else {
                         //always return the value not the class
                         $request[$inputKey] = (string)Formatter::call($method, $params, $request[$inputKey]);
@@ -66,12 +67,11 @@ class FormatterProcessor
      * @param  mixed $iteration
      * @return array
      */
-    private function extractFormatterDetails($iteration)
+    private function extractIterationDetails($iteration)
     {
-        $formatterMethods = trim($iteration, "|");
         return [
-            'params'=>strpos($formatterMethods, ":") ? explode(",", str_after($formatterMethods, ":")) : [],
-            'method'=>str_before($formatterMethods, ":")
+            'params'=>strpos($iteration, ":") ? explode(",", Str::after($iteration, ":")) : [],
+            'method'=>Str::before($iteration, ":")
         ];
     }
     /**
@@ -83,18 +83,20 @@ class FormatterProcessor
     private function convertExplicitKeys($request, $explictKeys)
     {
         foreach ($explictKeys as $input => $formatters) {
-            $formatters = explode('|', $formatters);
+            $formatters = explode('|', trim($formatters, "|"));
 
-            foreach ($formatters as $formatterMethods) {
-                $details = $this->extractFormatterDetails($formatterMethods);
+            foreach ($formatters as $methods) {
+                $details = $this->extractIterationDetails($methods);
 
                 $params = $details['params'];
 
                 $method = $details['method'];
-                if (!is_null(data_get($request, $input)) && strpos($input, ".")) {
-                    data_set($request, $input, (string)Formatter::call($method, $params, data_get($request, $input)));
+
+                $data = data_get($request, $input);
+                if (!is_null($data) && strpos($input, ".")) {
+                    data_set($request, $input, (string)Formatter::call($method, $params, $data));
                 } elseif (is_array($request[$input])) {
-                    $request[$input] = $this->handleArrayInput($request[$input], $method, $params);
+                    $request[$input] = $this->handleMethodCallsOnArrayInput($request[$input], $method, $params);
                 } else {
                     $request[$input] = (string)Formatter::call($method, $params, $request[$input]);
                 }
@@ -102,27 +104,5 @@ class FormatterProcessor
         }
 
         return $request;
-    }
-    /**
-     * Handle an array input field
-     * @param  array $input
-     * @param  String $method
-     * @param  array $params
-     * @return array $newValues
-     */
-    private function handleArrayInput($input, $method, $params)
-    {
-        $newValues = [];
-
-
-        foreach ($input as $key => $value) {
-            if (is_array($value)) {
-                $newValues[$key] = $this->handleArrayInput($value, $method, $params);
-            } else {
-                $newValues[$key] =  (string)Formatter::call($method, $params, $value);
-            }
-        }
-
-        return $newValues;
     }
 }

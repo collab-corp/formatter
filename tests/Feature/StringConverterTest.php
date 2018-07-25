@@ -6,11 +6,9 @@ use CollabCorp\Formatter\Tests\TestCase;
 
 class StringConverterTest extends TestCase
 {
-
     public function setUp()
     {
         $this->formatter = new Formatter('This is a test string! 123 test foobar!');
-
     }
     /**
      * @test
@@ -19,7 +17,6 @@ class StringConverterTest extends TestCase
     {
         $startWith ='Im a prefix that is added: original sentence->';
         $this->assertEquals($startWith.$this->formatter->get(), $this->formatter->start($startWith)->get());
-
     }
 
     /**
@@ -29,6 +26,23 @@ class StringConverterTest extends TestCase
     {
         $this->formatter->setValue('123456789');
         $this->assertEquals('123-45-6789', $this->formatter->ssn()->get());
+    }
+
+    /**
+     * @test
+     */
+    public function toUpperMethod()
+    {
+        $this->formatter->setValue('test');
+        $this->assertEquals('TEST', $this->formatter->toUpper()->get());
+    }
+    /**
+     * @test
+     */
+    public function toLowerMethod()
+    {
+        $this->formatter->setValue('TEST');
+        $this->assertEquals('test', $this->formatter->toLower()->get());
     }
 
     /**

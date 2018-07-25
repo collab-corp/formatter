@@ -17,9 +17,10 @@ class MultipleFormattingTest extends TestCase
             'phone'=>'onlyNumbers|phone',
             'ssn'=>'ssn',
             'slug'=>'slug',
-            'price'=>'roundTo:2|start:$',
-            'percent'=>'percentage:2|roundTo:2|finish:%',
-            'items'=>'onlyNumbers|add:2|roundTo:0|finish:%'
+            'price'=>'decimals:2|start:$',
+            'percent'=>'percentage:2|decimals:2|finish:%',
+            'items'=>'onlyNumbers|add:2|decimals:0|finish:%',
+            'foo.bar'=>'onlyNumbers|add:2|decimals:0|'
 
         ];
 
@@ -31,6 +32,10 @@ class MultipleFormattingTest extends TestCase
             'slug'=>'about us',
             'price'=>'300',
             'percent'=>'30',
+            'foo'=>[
+                'bar'=>20,
+                'baz'=>22
+            ],
             'items'=>[
 
                 'test123',
@@ -44,6 +49,7 @@ class MultipleFormattingTest extends TestCase
             ]
         ];
 
+
         $request = Formatter::convert($formatters, $request);
 
 
@@ -54,6 +60,8 @@ class MultipleFormattingTest extends TestCase
         $this->assertEquals('$300.00', $request['price']);
         $this->assertEquals('0.30%', $request['percent']);
         $this->assertEquals('125%', $request['items'][0]);
+        $this->assertEquals('22', $request['foo']['bar']);
+        $this->assertEquals('22', $request['foo']['baz']);
         $this->assertEquals('323%', $request['items'][1]);
         $this->assertEquals('458%', $request['items'][2]);
         $this->assertEquals('125%', $request['items'][3][0]);
@@ -71,12 +79,15 @@ class MultipleFormattingTest extends TestCase
             'name*'=>'titleCase',
             '*phone*'=>'onlyNumbers|phone',
             '*number'=>'add:2|multiply:2',
-            '*items*'=>'onlyNumbers|add:2|roundTo:0|finish:%',
+            '*items*'=>'onlyNumbers|add:2|decimals:0|finish:%',
             'explicit'=>'finish:foo',
             'nest.phone'=>'onlyNumbers',
             'nest.foo'=>'add:3'
 
         ];
+
+
+
 
         $request=[
 

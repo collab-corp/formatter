@@ -155,7 +155,7 @@ Another useful and probably the best reason for use of this package is processin
           ];
 
           //returns collection of new input converted.
-          $convertedInput = Formatter::convert($formatters, $request->all());
+          $convertedInput = Formatter::convert($request->all(),$formatters);
 
           //replace existing request data with new converted data,
           $request->replace($convertedInput->all());
@@ -171,6 +171,64 @@ If the formatter method you want to call needs parameters then specify parameter
 `ex: add:2,2`
 
 You could also define a method on your models and pass in `$this->attributes`  vs defining a mutator for each attribute.
+
+
+## ConvertsInput Trait
+
+If you'd like to be able to mass convert input in your controllers, out of the box we provide a trait `ConvertsInput` for convenience and quickly calling the `Formatter::convert()` method as shown above:
+
+```php
+
+
+<?php
+use CollabCorp\Formatter\Concerns\ConvertsInput;
+class SomeController{
+    use ConvertsInput;
+
+
+}
+
+```
+
+Then you can simply just call as needed `convert` as needed:
+
+```php
+<?php
+...
+
+
+public store(Request $request){
+
+    $newData = $this->convert($request, [
+
+        'phone'=>'onlyNumbers|phone',
+
+        'price'=>'decimals:2',
+
+        'tax'=>'trim:%|percentage:2',
+
+        'page'=>'slug'
+
+    ]);
+
+
+    //as usual
+
+}
+
+
+```
+<strong>
+ Note: If you pass in the request object without calling all(), the data will be replaced  for you automatically, otherwise, you'll be responsible for calling replace() on the request object yourself, if you'd like to.
+</strong>
+
+
+You may also reuse this trait outside of controller for your models or collections. Really the trait is usable for array input  in general. Simply pass in the array wanted. If you pass in a collection, the trait will extract the underlying array. If you pass in something that is `Arrayable` we will call `toArray`.
+
+<strong>
+   Regardless of what you pass in, a collection of the new converted data will always be returned.
+</strong>
+
 
 # Methods are whitelisted
 
@@ -212,11 +270,11 @@ $formatters=[
 The `Formatter` class is macroable which means you can add extra formatting methods on run time. Heres an example:
 
 ```php
-Formatter::macro('toUpper', function () {
-    return $this->setValue(strtoupper($this->value));
+Formatter::macro('hello', function () {
+    return $this->setValue("Hello ". $this->value));
 });
 
-$upper= (new Formatter("sergio"))->toUpper()->get(); // "SERGIO"
+$upper= (new Formatter("World"))->hello()->get(); // "Hello World"
 
 ```
 
@@ -303,6 +361,12 @@ $upper= (new Formatter("sergio"))->toUpper()->get(); // "SERGIO"
     </li>
     <li>
         <a href="#rtrim">rtrim</a>
+    </li>
+    <li>
+        <a href="#toupper">toUpper</a>
+    </li>
+    <li>
+        <a href="#tolower">toLower</a>
     </li>
     <li>
         <a href="#url">url</a>
@@ -567,6 +631,22 @@ Note: These simply are methods called using the Carbon Library. These are the on
     //####something
     Formatter::create('####something####')->rtrim("#")->get();
     ```
+  * ### toUpper
+
+    Convert the string to uppercase:
+
+    ```php
+    //'SOMETHING'
+    Formatter::create('something')->toUpper()->get();
+
+ * ### toLower
+
+    Convert the string to lowercase:
+
+    ```php
+    //'something'
+    Formatter::create('SOMETHING')->toLower()->get();
+    ```
 
   * ### url
     Creates a url string of your value using laravel's url() helper:
@@ -579,7 +659,7 @@ Note: These simply are methods called using the Carbon Library. These are the on
 
     ##  Math Methods
     <strong>Note:</strong>
-    The math formatter/conversion methods  in this package makes use of the `bcmath` extension for precision math. In the event that the    `bcmath` functions are unavailable, then it will fall back to native math operations requiring php 5.6+. In addition,when using `bcmath`, all values are scaled to be 65 decimal places. If you want to format how many decimal places, consider chaining `roundTo` method.
+    The math formatter/conversion methods  in this package makes use of the `bcmath` extension for precision math. In the event that the    `bcmath` functions are unavailable, then it will fall back to native math operations requiring php 5.6+. In addition,when using `bcmath`, all values are scaled to be 64 decimal places for precision math. If you want to format how many decimal places, consider chaining `roundTo` method.
 
   * ### roundTo
     format a number to have the speficied number of decimal places:

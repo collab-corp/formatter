@@ -2,17 +2,19 @@
 
 namespace CollabCorp\Formatter;
 
+use CollabCorp\Formatter\Concerns\ProcessesMethodCallsOnArrays;
 use CollabCorp\Formatter\ConverterManager;
 use CollabCorp\Formatter\Converters\ArrayConverter;
 use CollabCorp\Formatter\Exceptions\FormatterException;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 
 class Formatter
 {
-    use Macroable {
+    use ProcessesMethodCallsOnArrays,Macroable {
         __call as macroCall;
     }
     /**
@@ -49,6 +51,7 @@ class Formatter
 
         if ($this->value instanceof Collection || is_array($this->value)) {
             $values = [];
+
             foreach ($this->value as $key => $value) {
                 if (is_array($value)) {
                     $values[$key] = $this->handleMethodCallsOnArrayInput($value, $method, $args);
@@ -81,26 +84,6 @@ class Formatter
         $formatter = $formatter->create(is_callable($previous) ? $previous() : $previous);
 
         return $formatter->$method(...$parameters);
-    }
-
-    /**
-     * Handle method calls on array values
-
-     * @return array
-     */
-    protected function handleMethodCallsOnArrayInput($input, $method, $params)
-    {
-        $values = [];
-
-        foreach ($input as $key => $value) {
-            if (is_array($value)) {
-                $values[$key] = $this->handleMethodCallsOnArrayInput($value, $method, $params);
-            } else {
-                $values[$key] =  static::call($method, $params, $value)->get();
-            }
-        }
-
-        return $values;
     }
 
 
@@ -280,11 +263,17 @@ class Formatter
     /**
     * Convert the input according to the formatters
     * @param  array $formatters
-    * @param  array $request
+    * @param  array|mixed $request
     * @return Illuminate\Support\Collection
     */
-    public static function convert(array $formatters, array $request)
+    public static function convert(array $formatters, $request)
     {
+        if (($request instanceof Request)|| $request instanceof Collection) {
+            $request = $request->all();
+        } elseif ($request instanceof Arrayable) {
+            $request = $request->toArray();
+        }
+
         $explictKeys = array_filter($formatters, function ($key) use ($request) {
             return array_key_exists($key, $request) || !is_null(data_get($request, $key));
         }, ARRAY_FILTER_USE_KEY);

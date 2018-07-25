@@ -29,7 +29,7 @@ class FormatterTest extends TestCase
     public function itCanProcessesMultipleValuesOnInstantiation()
     {
         $formatter = (new Formatter(['123something', ["foo123","bar456",'baz678']]))->onlyNumbers();
-        $this->assertEquals(['123',['123','456', '678']], $formatter->get());
+        $this->assertEquals(['123',['123','456', '678']], $formatter->all());
     }
     /** @test */
     public function it_is_macroable()

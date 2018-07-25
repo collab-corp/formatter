@@ -55,9 +55,9 @@ class MathConverterTest extends TestCase
     /**
     * @test
     */
-    public function roundToMethod()
+    public function decimalsMethod()
     {
-        $this->assertEquals(20.000, $this->formatter->roundTo(3)->get());
+        $this->assertEquals(20.000, $this->formatter->decimals(3)->get());
     }
 
     /**

@@ -41,6 +41,8 @@ class StringConverter extends Formatter
         'titleCase',
         'trim',
         'truncate',
+        'toUpper',
+        'toLower',
         'url'
     ];
     /**
@@ -266,6 +268,27 @@ class StringConverter extends Formatter
             $limit = mb_strlen($this->value);
         }
         $this->value = Str::limit($this->value, $limit, $append);
+        return $this;
+    }
+
+    /**
+     * Convert the string to all lower case letters.
+     * @return self
+     */
+    public function toLower()
+    {
+        $this->value = mb_strtolower($this->value);
+
+        return $this;
+    }
+    /**
+    * Convert the string to all lower case letters.
+    * @return self
+    */
+    public function toUpper()
+    {
+        $this->value = mb_strtoupper($this->value);
+
         return $this;
     }
     /**

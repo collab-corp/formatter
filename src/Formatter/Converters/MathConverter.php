@@ -12,7 +12,7 @@ class MathConverter extends Formatter
     */
     protected $whiteList =[
         //Math methods
-        'roundTo',
+        'decimals',
         'add',
         'subtract',
         'multiply',
@@ -25,7 +25,7 @@ class MathConverter extends Formatter
      * @param  $numberOfPlaces
      * @return self
      */
-    public function roundTo($numberOfPlaces = 2)
+    public function decimals($numberOfPlaces = 2)
     {
         $this->value = number_format($this->value, $numberOfPlaces, ".", "");
 
