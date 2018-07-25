@@ -17,9 +17,9 @@ class MultipleFormattingTest extends TestCase
             'phone'=>'onlyNumbers|phone',
             'ssn'=>'ssn',
             'slug'=>'slug',
-            'price'=>'decimals:2|start:$',
-            'percent'=>'percentage:2|finish:%',
-            'items'=>'onlyNumbers|add:2|finish:%'
+            'price'=>'roundTo:2|start:$',
+            'percent'=>'percentage:2|roundTo:2|finish:%',
+            'items'=>'onlyNumbers|add:2|roundTo:0|finish:%'
 
         ];
 
@@ -71,7 +71,7 @@ class MultipleFormattingTest extends TestCase
             'name*'=>'titleCase',
             '*phone*'=>'onlyNumbers|phone',
             '*number'=>'add:2|multiply:2',
-            '*items*'=>'onlyNumbers|add:2|finish:%',
+            '*items*'=>'onlyNumbers|add:2|roundTo:0|finish:%',
             'explicit'=>'finish:foo',
             'nest.phone'=>'onlyNumbers',
             'nest.foo'=>'add:3'

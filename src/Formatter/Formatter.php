@@ -3,7 +3,11 @@
 namespace CollabCorp\Formatter;
 
 use CollabCorp\Formatter\ConverterManager;
+use CollabCorp\Formatter\Converters\ArrayConverter;
 use CollabCorp\Formatter\Exceptions\FormatterException;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 
 class Formatter
@@ -13,7 +17,7 @@ class Formatter
     }
     /**
     * Whitelist of the allowed methods to be called
-    * @var array $whiteList
+    * @var array
     */
     protected $whiteList =[];
     /**
@@ -23,7 +27,7 @@ class Formatter
     protected $value;
 
     /**
-     * the converter manager.
+     * The converter manager.
      * @var \CollabCorp\Formatter\ConverterManager
      */
     protected static $manager;
@@ -42,8 +46,64 @@ class Formatter
 
             return $this;
         }
+
+        if ($this->value instanceof Collection || is_array($this->value)) {
+            $values = [];
+            foreach ($this->value as $key => $value) {
+                if (is_array($value)) {
+                    $values[$key] = $this->handleMethodCallsOnArrayInput($value, $method, $args);
+                } else {
+                    $values[$key] = static::call($method, $args, $value)->get();
+                }
+            }
+            return new static($values);
+        }
+
+        //simple/single values
         return static::call($method, $args, $this);
     }
+    /**
+     * Proxy the call into the first formatter that can handle it.
+     *
+     * @param  string $method
+     * @param  mixed $parameters
+     * @param  object | null $previous [The previous formatter or value]
+     *
+     * @throws \CollabCorp\Formatter\Exceptions\FormatterException
+     * @return mixed
+     */
+    public static function call($method, $parameters, $previous = null)
+    {
+        $formatter = Formatter::implementing($method);
+
+        throw_if(is_null($formatter), FormatterException::notFound($method));
+
+        $formatter = $formatter->create(is_callable($previous) ? $previous() : $previous);
+
+        return $formatter->$method(...$parameters);
+    }
+
+    /**
+     * Handle method calls on array values
+
+     * @return array
+     */
+    protected function handleMethodCallsOnArrayInput($input, $method, $params)
+    {
+        $values = [];
+
+        foreach ($input as $key => $value) {
+            if (is_array($value)) {
+                $values[$key] = $this->handleMethodCallsOnArrayInput($value, $method, $params);
+            } else {
+                $values[$key] =  static::call($method, $params, $value)->get();
+            }
+        }
+
+        return $values;
+    }
+
+
     /**
      * Construct a new instance
      * @param mixed $value
@@ -51,10 +111,7 @@ class Formatter
      */
     public function __construct($value = '')
     {
-        if ($value === null || $value == '') {
-            return null;
-        }
-        $this->value = $value;
+        $this->setValue($value);
 
         return $this;
     }
@@ -78,15 +135,52 @@ class Formatter
      */
     public function __toString()
     {
+        if ($this->value instanceof Collection) {
+            throw FormatterException::stringCastOnMultipleValues();
+        }
         return (string) $this->get();
     }
 
     /**
-    * Get the value from the instance
+    * Get the value(s) from the instance
+    * @param  string|int $key
+    * @param  mixed $def
     * @return mixed $value
     */
-    public function get()
+    public function get($key = null, $def = null)
     {
+        if ($this->value instanceof Collection) {
+            if (!is_null($key)) {
+                return $this->value->get($key, $def);
+            }
+            //if no index/key was specified just return all
+            return $this->value->all();
+        }
+        return $this->value;
+    }
+    /**
+    * Get the first value from the instance
+    * if the value is a collection instance
+    * @return mixed $value
+    */
+    public function all()
+    {
+        if ($this->value instanceof Collection) {
+            return $this->value->all();
+        }
+        return $this->value;
+    }
+    /**
+    * Get the first value from the instance
+    * if the value is a collection instance
+    * or just return the underlying simple value
+    * @return mixed $value
+    */
+    public function first()
+    {
+        if ($this->value instanceof Collection) {
+            return $this->value->first();
+        }
         return $this->value;
     }
 
@@ -97,8 +191,7 @@ class Formatter
      */
     public static function create($value)
     {
-        $formatter = new static($value);
-        return $formatter;
+        return new static($value);
     }
 
     /**
@@ -108,14 +201,19 @@ class Formatter
      */
     public function setValue($value)
     {
-        $this->value = $value;
-        /*automatically treat empty strings as null,
-        this is due to some issues with laravel's convert empty string to null middleware*/
-        if ($value == '') {
-            return $this->clear();
+        if (is_array($value)) {
+            $this->value = collect($value);
+        } elseif ($value instanceof Arrayable) {
+            $this->value =  collect($value->toArray());
+        } elseif (is_null($value) || $value == '') {
+            /*
+            Automatically treat empty strings as null, this is due to
+            some issues with laravel's convert empty string to null middleware
+            */
+            $this->value = null;
+        } else {
+            $this->value = $value;
         }
-
-
 
         return $this;
     }
@@ -146,7 +244,7 @@ class Formatter
         return static::$manager = new ConverterManager(app());
     }
     /**
-    * This allows the Formatter to be called as a function.
+    * Call the formatter as a function
     *
     * @param  mixed $value
     * @return mixed
@@ -156,36 +254,21 @@ class Formatter
         if ($value) {
             $this->setValue($value);
         }
+
+        if ($this->value instanceof Collection) {
+            return $this->all();
+        }
         return $this->get();
     }
 
-    /**
-     * Proxy the call into the first formatter that can handle it.
-     *
-     * @param  string $method
-     * @param  mixed $parameters
-     * @param  object | null $previous [The previous formatter or value]
-     *
-     * @throws \CollabCorp\Formatter\Exceptions\FormatterException
-     * @return mixed
-     */
-    public static function call($method, $parameters, $previous = null)
-    {
-        $formatter = Formatter::implementing($method);
-
-        throw_if(is_null($formatter), FormatterException::notFound($method));
-
-
-        return $formatter->create(is_callable($previous) ? $previous() : $previous)->$method(...$parameters);
-    }
 
     /**
-     * Get a Formatter instance that implements given method
+     * Get a Converter instance that implements given method
      *
      * @param  string $method
-     * @return \CollabCorp\Formatter\Formatters\BaseFormatter
+     * @return CollabCorp\Formatter\Formatter
      */
-    public static function implementing($method)
+    protected static function implementing($method)
     {
         return collect(static::manager()->available())->map(function ($driver) {
             return static::manager()->driver($driver);

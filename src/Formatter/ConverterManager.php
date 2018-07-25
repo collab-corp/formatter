@@ -2,10 +2,11 @@
 
 namespace CollabCorp\Formatter;
 
-use CollabCorp\Formatter\Formatter;
+use CollabCorp\Formatter\Converters\ArrayConverter;
 use CollabCorp\Formatter\Converters\DateConverter;
 use CollabCorp\Formatter\Converters\MathConverter;
 use CollabCorp\Formatter\Converters\StringConverter;
+use CollabCorp\Formatter\Formatter;
 use Illuminate\Support\Manager;
 use Illuminate\Support\Str;
 use ReflectionClass;
@@ -68,21 +69,38 @@ class ConverterManager extends Manager
         return 'default';
     }
 
+    /**
+     * Return the default formatter driver
+     * @return CollabCorp\Formatter\Formatter
+     */
     public function createDefaultDriver()
     {
         return new Formatter;
     }
 
+    /**
+     * Return the math formatter driver
+     * @return CollabCorp\Formatter\MathConverter
+     */
     public function createMathDriver()
     {
         return new MathConverter;
     }
 
+
+    /**
+     * Return the string formatter driver
+     * @return CollabCorp\Formatter\StringConverter
+     */
     public function createStringDriver()
     {
         return new StringConverter;
     }
 
+    /**
+     * Return the date formatter driver
+     * @return CollabCorp\Formatter\DateConverter
+     */
     public function createDateDriver()
     {
         return new DateConverter;

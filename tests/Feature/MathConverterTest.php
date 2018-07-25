@@ -17,7 +17,6 @@ class MathConverterTest extends TestCase
     public function addMethod()
     {
         $this->assertEquals(22, $this->formatter->add(2)->get());
-
     }
 
 
@@ -27,8 +26,6 @@ class MathConverterTest extends TestCase
     public function subtractMethod()
     {
         $this->assertEquals(18, $this->formatter->subtract(2)->get());
-
-
     }
 
     /**
@@ -37,7 +34,6 @@ class MathConverterTest extends TestCase
     public function divideMethod()
     {
         $this->assertEquals(10, $this->formatter->divide(2)->get());
-
     }
 
 
@@ -47,7 +43,6 @@ class MathConverterTest extends TestCase
     public function multiplyMethod()
     {
         $this->assertEquals(40, $this->formatter->multiply(2)->get());
-
     }
     /**
      * @test
@@ -60,9 +55,9 @@ class MathConverterTest extends TestCase
     /**
     * @test
     */
-    public function decimalsMethod()
+    public function roundToMethod()
     {
-        $this->assertEquals(20.000, $this->formatter->decimals(3)->get());
+        $this->assertEquals(20.000, $this->formatter->roundTo(3)->get());
     }
 
     /**
@@ -75,7 +70,6 @@ class MathConverterTest extends TestCase
 
         //reset the value
         $this->formatter->setValue(10);
-
     }
 
     /**

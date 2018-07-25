@@ -45,41 +45,41 @@ class StringConverter extends Formatter
     ];
     /**
      * Change a 9 numeric value to a social security format i.e. xxx-xx-xxxx
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function ssn()
     {
-        if (strlen($this->onlyNumbers($this->value)->get()) == '9') {
-            $this->value = $this->onlyNumbers($this->value)->get();
-            $this->value = substr($this->value, 0, 3).'-'.substr($this->value, 3, 2).'-'.substr($this->value, 5, strlen($this->value));
+        if (mb_strlen($this->value) == '9') {
+            $this->value = substr($this->value, 0, 3).'-'.substr($this->value, 3, 2).'-'.substr($this->value, 5, mb_strlen($this->value));
         }
         return $this;
     }
     /**
-     * Insert a given character after every nth character.
+     * Insert a given character after every nth character
+     * till we hit the end of the value.
      * @param  integer $nth
      * @param  string $insert
-     * @return CollabCorp\Formatter\Formatter
+     * @return selfe
      */
     public function insertEvery($nth, $insert)
     {
-        $this->value = chunk_split($this->value, $nth, $insert);
+        $this->value = rtrim(chunk_split($this->value, $nth, $insert), $insert);
         return $this;
     }
     /**
      * Truncate off the specifed number of characters
      * @param  $takeOff
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function truncate($takeOff = 0)
     {
-        $this->value = rtrim($this->value, substr($this->value, strlen($this->value) -($takeOff)));
+        $this->value = rtrim($this->value, substr($this->value, mb_strlen($this->value) -($takeOff)));
         return $this;
     }
     /**
      * Add the given value to our value if it does not already end with the value
      * @param string $finish
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function finish($finish)
     {
@@ -89,7 +89,7 @@ class StringConverter extends Formatter
     /**
      * Add the given value to our value if it does not already start with the value
      * @param string $start
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function start($start)
     {
@@ -99,7 +99,7 @@ class StringConverter extends Formatter
     /**
      * Get everything before the specified value
      * @param string $before
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function before($before)
     {
@@ -109,7 +109,7 @@ class StringConverter extends Formatter
     /**
      * Get everything after the specified value
      * @param string $before
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function after($after)
     {
@@ -119,7 +119,7 @@ class StringConverter extends Formatter
     /**
      * Prefix something onto our value
      * @param string $prefix
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function prefix($prefix)
     {
@@ -129,7 +129,7 @@ class StringConverter extends Formatter
     /**
      * Add a suffix onto our value
      * @param string $suffix
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function suffix($suffix)
     {
@@ -139,7 +139,7 @@ class StringConverter extends Formatter
 
     /**
      * Convert the value to camel case.
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function camelCase()
     {
@@ -149,7 +149,7 @@ class StringConverter extends Formatter
     }
     /**
      * Convert the value to a slug friendly string.
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function slug()
     {
@@ -159,7 +159,7 @@ class StringConverter extends Formatter
     }
     /**
      * Formatter the value to kebab case.
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function kebabCase()
     {
@@ -169,7 +169,7 @@ class StringConverter extends Formatter
     }
     /**
      * Formatter the value to snake case.
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function snakeCase()
     {
@@ -180,7 +180,7 @@ class StringConverter extends Formatter
 
     /**
      * Formatter the value to title case.
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function titleCase()
     {
@@ -190,7 +190,7 @@ class StringConverter extends Formatter
     }
     /**
      * Formatter the value to studly case.
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function studlyCase()
     {
@@ -201,7 +201,7 @@ class StringConverter extends Formatter
 
     /**
      * Formatter the value to its plural form.
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function plural()
     {
@@ -212,20 +212,20 @@ class StringConverter extends Formatter
 
     /**
      * Formatter the value to a pretty phone format (xxx) xxx-xxxx
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function phone()
     {
-        if (strlen($this->value) == '11') {
+        if (mb_strlen($this->value) == '11') {
             $this->value = substr($this->value, 0, 1).'('.substr($this->value, 1, 3).')'.substr($this->value, 4, 3).'-'.substr($this->value, 7);
-        } elseif (strlen($this->value) == '10') {
+        } elseif (mb_strlen($this->value) == '10') {
             $this->value = '('.substr($this->value, 0, 3).')'.substr($this->value, 3, 3).'-'.substr($this->value, 6);
         }
         return $this;
     }
     /**
      * Encrypt our value
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function encrypt()
     {
@@ -236,7 +236,7 @@ class StringConverter extends Formatter
 
     /**
      * Decrypt our value
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function decrypt()
     {
@@ -245,7 +245,7 @@ class StringConverter extends Formatter
     }
     /**
      * Hash our value with bcrypt
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function bcrypt()
     {
@@ -258,12 +258,12 @@ class StringConverter extends Formatter
      * and append a string
      * @param  string $limit
      * @param  string $append
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function limit($limit = null, $append = '')
     {
         if ($limit === null) {
-            $limit = strlen($this->value);
+            $limit = mb_strlen($this->value);
         }
         $this->value = Str::limit($this->value, $limit, $append);
         return $this;
@@ -272,7 +272,7 @@ class StringConverter extends Formatter
      * Replace all the given characters with the given character
      * @param  string $search
      * @param  string $replace
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function replace($search, $replace = '')
     {
@@ -282,7 +282,7 @@ class StringConverter extends Formatter
     }
     /**
      * Remove everything but numbers from the value
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function onlyNumbers()
     {
@@ -292,7 +292,7 @@ class StringConverter extends Formatter
     }
     /**
      * Convert the value to a url using laravels url helper
-     * @return CollabCorp\Formatter\Formatter
+     * @return self
      */
     public function url()
     {
@@ -302,7 +302,7 @@ class StringConverter extends Formatter
 
     /**
      * Remove everything but letters from the value
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function onlyLetters()
     {
@@ -315,7 +315,7 @@ class StringConverter extends Formatter
      * Remove all non alpha numeric characters
      * including spaces, unless specified.
      * @param  boolean $allowSpaces
-     * @return CollabCorp\Formatter\Formatter
+     * @return self
      */
     public function onlyAlphaNumeric($allowSpaces = false)
     {
@@ -329,7 +329,7 @@ class StringConverter extends Formatter
     /**
      * Remove Leading and ending characters
      * @param  string $trimOff
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function trim($trimOff = ' ')
     {
@@ -340,7 +340,7 @@ class StringConverter extends Formatter
     /**
      * Remove leading characters
      * @param  string $trimOff
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function ltrim($trimOff = ' ')
     {
@@ -351,7 +351,7 @@ class StringConverter extends Formatter
     /**
      * Remove ending characters
      * @param  string $trimOff
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function rtrim($trimOff = ' ')
     {

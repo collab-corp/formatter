@@ -12,7 +12,7 @@ class MathConverter extends Formatter
     */
     protected $whiteList =[
         //Math methods
-        'decimals',
+        'roundTo',
         'add',
         'subtract',
         'multiply',
@@ -23,9 +23,9 @@ class MathConverter extends Formatter
     /**
      * Make our value be a decimal of specified places
      * @param  $numberOfPlaces
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
-    public function decimals($numberOfPlaces = 2)
+    public function roundTo($numberOfPlaces = 2)
     {
         $this->value = number_format($this->value, $numberOfPlaces, ".", "");
 
@@ -34,12 +34,15 @@ class MathConverter extends Formatter
     /**
      * Add a number to the numeric value
      * @param mixed $number
-     * @param integer $scale
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
-    public function add($number, $scale = 0)
+    public function add($number)
     {
-        $this->value = bcadd($this->value, $number, $scale);
+        if (!function_exists('bcadd')) {
+            $this->value = $this->value + $number;
+        } else {
+            $this->value = bcadd($this->value, $number, 64);
+        }
 
         return $this;
     }
@@ -47,12 +50,16 @@ class MathConverter extends Formatter
     /**
      * Subtract a number from the our value
      * @param mixed $number
-     * @param integer $scale
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
-    public function subtract($number, $scale = 0)
+    public function subtract($number)
     {
-        $this->value = bcsub($this->value, $number, $scale);
+        if (!function_exists('bcsub')) {
+            $this->value = $this->value - $number;
+        } else {
+            $this->value = bcsub($this->value, $number, 64);
+        }
+
 
         return $this;
     }
@@ -60,23 +67,31 @@ class MathConverter extends Formatter
     /**
      * Multiply our value by the given number
      * @param mixed $number
-     * @param integer $scale
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
-    public function multiply($number, $scale = 0)
+    public function multiply($number)
     {
-        $this->value = bcmul($this->value, $number, $scale);
+        if (!function_exists('bcmul')) {
+            $this->value = $this->value * $number;
+        } else {
+            $this->value = bcmul($this->value, $number, 64);
+        }
+
         return $this;
     }
     /**
      * Raise our value the given power number
      * @param mixed $number
-     * @param integer $scale
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
-    public function power($number, $scale = 0)
+    public function power($number)
     {
-        $this->value = bcpow($this->value, $number, $scale);
+        if (!function_exists('bcpow')) {
+            $this->value = $this->value ** $number;
+        } else {
+            $this->value = bcpow($this->value, $number, 64);
+        }
+
 
         return $this;
     }
@@ -84,24 +99,27 @@ class MathConverter extends Formatter
     /**
      * Multiply the value by the given the numeric value
      * @param mixed $number
-     * @param integer $scale
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
-    public function divide($number, $scale = 0)
+    public function divide($number)
     {
-        $this->value = bcdiv($this->value, $number, $scale);
+        if (!function_exists('bcdiv')) {
+            $this->value = $this->value / $number;
+        } else {
+            $this->value = bcdiv($this->value, $number, 64);
+        }
+
 
         return $this;
     }
 
     /**
      * Convert our number to a percentage
-     * @param integer $scale
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
-    public function percentage($scale = 2)
+    public function percentage()
     {
-        $this->value = $this->divide(100, $scale)->get();
+        $this->value = $this->divide(100)->get();
 
         return $this;
     }

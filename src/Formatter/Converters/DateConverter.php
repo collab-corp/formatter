@@ -3,6 +3,7 @@
 namespace CollabCorp\Formatter\Converters;
 
 use Carbon\Carbon;
+use CollabCorp\Formatter\Exceptions\FormatterException;
 use CollabCorp\Formatter\Formatter;
 
 class DateConverter extends Formatter
@@ -34,7 +35,7 @@ class DateConverter extends Formatter
     /**
      * Convert our carbon instance to a date format
      * @param String $dateFormat
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function format($dateFormat)
     {
@@ -43,21 +44,21 @@ class DateConverter extends Formatter
         return $this;
     }
 
+
     /**
      * Convert our value to a carbon instance
-     * @return  CollabCorp\Formatter\Formatter instance
+     * @return  self
      */
     public function toCarbon()
     {
         $this->value = Carbon::parse($this->value);
-
 
         return $this;
     }
 
     /**
     * Set a timezone on our carbon instance
-    * @return  CollabCorp\Formatter\Formatter instance
+    * @return  self
     */
     public function setTimezone($tz)
     {
@@ -68,7 +69,7 @@ class DateConverter extends Formatter
     /**
      * Add years to our carbon instance
      * @param mixed $years
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function addYears($years)
     {
@@ -79,7 +80,7 @@ class DateConverter extends Formatter
     /**
      * Add months to our carbon instance
      * @param mixed $months
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function addMonths($months)
     {
@@ -90,7 +91,7 @@ class DateConverter extends Formatter
     /**
      * Add weeks to our carbon instance
      * @param mixed $weeks
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function addWeeks($weeks)
     {
@@ -102,7 +103,7 @@ class DateConverter extends Formatter
     /**
     * Add days to our carbon instance
     * @param mixed $days
-    * @return CollabCorp\Formatter\Formatter instance
+    * @return self
     */
     public function addDays($days)
     {
@@ -115,7 +116,7 @@ class DateConverter extends Formatter
     /**
     * Add hours to our carbon instance
     * @param mixed $hours
-    * @return CollabCorp\Formatter\Formatter instance
+    * @return self
     */
     public function addHours($hours)
     {
@@ -127,7 +128,7 @@ class DateConverter extends Formatter
     /**
      * Add minutes to our carbon instance
      * @param mixed $minutes
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function addMinutes($minutes)
     {
@@ -138,7 +139,7 @@ class DateConverter extends Formatter
     /**
     * Add seconds to our carbon instance
     * @param mixed $seconds
-    * @return CollabCorp\Formatter\Formatter instance
+    * @return self
     */
     public function addSeconds($seconds)
     {
@@ -150,7 +151,7 @@ class DateConverter extends Formatter
     /**
      * Subtract years from our carbon instance
      * @param mixed $years
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function subYears($years)
     {
@@ -162,7 +163,7 @@ class DateConverter extends Formatter
     /**
     * Subtract months to our carbon instance
     * @param mixed $months
-    * @return CollabCorp\Formatter\Formatter instance
+    * @return self
     */
     public function subMonths($months)
     {
@@ -173,7 +174,7 @@ class DateConverter extends Formatter
     /**
      * Subtract weeks to our carbon instance
      * @param mixed $weeks
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function subWeeks($weeks)
     {
@@ -185,7 +186,7 @@ class DateConverter extends Formatter
     /**
     * Subtract days to our carbon instance
     * @param mixed $days
-    * @return CollabCorp\Formatter\Formatter instance
+    * @return self
     */
     public function subDays($days)
     {
@@ -197,7 +198,7 @@ class DateConverter extends Formatter
     /**
     * Subtract hours to our carbon instance
     * @param mixed $hours
-    * @return CollabCorp\Formatter\Formatter instance
+    * @return self
     */
     public function subHours($hours)
     {
@@ -209,7 +210,7 @@ class DateConverter extends Formatter
     /**
      * Subtract minutes to our carbon instance
      * @param mixed $minutes
-     * @return CollabCorp\Formatter\Formatter instance
+     * @return self
      */
     public function subMinutes($minutes)
     {
@@ -220,7 +221,7 @@ class DateConverter extends Formatter
     /**
     * Subtract seconds to our carbon instance
     * @param mixed $seconds
-    * @return CollabCorp\Formatter\Formatter instance
+    * @return self
     */
     public function subSeconds($seconds)
     {

@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/collab-corp/formatter.svg?branch=master)](https://travis-ci.org/collab-corp/formatter)
 [![StyleCI](https://styleci.io/repos/119897298/shield?branch=master)](https://styleci.io/repos/119897298)
 
-A Laravel formatting utility package.
+A package for formatting values in Laravel.
 
 We often find ourselves converting request input to meet certain formats. We do it before validation, maybe after validation, or we do it in our mutators. This package was designed to ease that process and to keep our controller/model code cleaner. This package mostly uses laravel's helper methods on top of its own custom methods, there is also some formatting using the Carbon date library.
 
@@ -27,21 +27,29 @@ in your `/config/app.php` file.
 
 
 
-## Requires
 
-This package makes use of:
+## Creating Formatters:
 
-* bcmath extension
-
-
-## Basic Use:
-You can new up a formatter
-`new Formatter('yourValue')->{someMethod}()->get();`
-
-In addition to calling get, it is also possible to get the results by casting the formatter to a string `(string)Formatter::create('something')->{method}();`
+There are multiple ways to create a formatter:
 
 
-or call the static method create `Formatter::create('yourValue')->{someMethod}()->get();`
+```php
+
+use CollabCorp\Formatter\Formatter;
+
+//You can simply new up a formatter
+new Formatter('yourValue');
+
+//or you could use static create method
+Formatter::create("yourValue");
+
+
+
+```
+
+## Converting Formatter Values
+
+Once you have insantiated your formatter, you can call any conversion/formatter <a href="#methods">methods</a> as detailed below.
 
 Here are a few examples using laravel's mutators :
 
@@ -57,8 +65,6 @@ class SomeModel extends Model{
         //format our number to 2 decimal places or however many places you want
         return new Formatter($this->attributes['price'])->decimals(2)->get();
 
-        //or can call static create
-        return Formatter::create($this->attributes['price'])->decimals(2)->get();
     }
 
     public function getPhoneNumberFormattedAttribute(){
@@ -101,11 +107,32 @@ This makes it convienient to run multiple conversions/formatting for our value. 
 
 ```
 
-Yuck! right? Although this was a rather small example and not bad, imagine if you had to do 3 other conversions? Keep your code cleaner and more readable with method chaining :D
+Yuck! right? Although this was a rather small example and not bad, imagine if you had to do 3 other conversions? Keep your code cleaner and more readable with method chaining :D.
+
+
+## Multiple Values
+The formatter class also supports formatting multiple values on a given instance:
+
+```php
+new Formatter(['value', 'value2'...]);
+```
+
+### Nested Arrays
+
+When processing nested arrays when using multiple values like noted above, this package recursively processes nested arrays as well. Meaning each of value of each nested array withing your array of values will be processed as well:
+
+```php
+
+
+$values = (new Formatter(['123something', ["foo123","bar456",'baz678']]))->onlyNumbers()->get();
+
+//returns ['123', ['123','456','678']]
+
+```
 
 ## Mass Conversions
 
-Another useful and probably the best reason for use of this package is processing multiple formatters on a given array of input such as the reques input or model attributes.The workflow for this is very similiar to laravel validation, so it should feel very natural to you. Here's an example of having middleware automatically format/convert input before the request hits the controller:
+Another useful and probably the best reason for use of this package is processing multiple conversion/formatter methods on a given array of input such as the request.The workflow for this is very similiar to laravel validation, so it should feel very natural to you. Here's an example of having middleware automatically format/convert input before the request hits the controller:
 
 
 ```php
@@ -138,8 +165,8 @@ Another useful and probably the best reason for use of this package is processin
 
 
 ```
-Very similiar to laravel validation right? When defining the formatters,use the name of the input in the request as the key and the value being the formatter(s) you want to run on that input. Seperate each method with a pipe character `|`.
-If the formatter method you want to call needs parameters then specify paramter input with a colon `:` then pass the parameters in a comma delimited list in the order that the method accepts them, refer to the methods  section to see what <a href="#methods">methods</a> require/accept parameters.
+Very similiar to laravel validation right? When defining the formatters,use the name of the input in the request as the key and the value being the formatter(s) you want to run on that input. Just like laravel rules, seperate each method with a pipe character `|`.
+If the formatter method you want to call needs parameters then specify parameter input with a colon `:` then pass the parameters in a comma delimited list in the order that the method accepts them, refer to the methods  section to see what <a href="#methods">methods</a> require/accept parameters.
 
 `ex: add:2,2`
 
@@ -286,7 +313,7 @@ $upper= (new Formatter("sergio"))->toUpper()->get(); // "SERGIO"
 
 <ul>
     <li>
-        <a href="#decimals">decimals</a>
+        <a href="#roundto">roundTo</a>
     </li>
     <li>
         <a href="#add">add</a>
@@ -363,6 +390,8 @@ Note: These simply are methods called using the Carbon Library. These are the on
         <a href="#subseconds">subSeconds</a>
     </li>
 </ul>
+
+## String Methods
 
 * ### ssn
     convert a 9 numeric value to a social security format:
@@ -548,11 +577,15 @@ Note: These simply are methods called using the Carbon Library. These are the on
 
     ##
 
-  * ### decimals
+    ##  Math Methods
+    <strong>Note:</strong>
+    The math formatter/conversion methods  in this package makes use of the `bcmath` extension for precision math. In the event that the    `bcmath` functions are unavailable, then it will fall back to native math operations requiring php 5.6+. In addition,when using `bcmath`, all values are scaled to be 65 decimal places. If you want to format how many decimal places, consider chaining `roundTo` method.
+
+  * ### roundTo
     format a number to have the speficied number of decimal places:
     ```php
-    //20.00
-    Formatter::create(20)->decimals(2)->get();
+    //22.00
+    Formatter::create(20)->add(2)->roundTo(2)->get();
     ```
   * ### add
     add a given number to the current numeric value.Automatically scales 0 decimal places unless specified as 2nd param:
@@ -596,6 +629,8 @@ Note: These simply are methods called using the Carbon Library. These are the on
     ```
 
   ##
+
+  ## Date Methods
 
 * ### toCarbon
     convert the value to a Carbon\Carbon instance:
