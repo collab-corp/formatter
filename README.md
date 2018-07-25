@@ -63,7 +63,7 @@ class SomeModel extends Model{
 
     public function getProductPriceAttribute(){
         //format our number to 2 decimal places or however many places you want
-        return new Formatter($this->attributes['price'])->decimals(2)->get();
+        return new Formatter($this->attributes['price'])->roundTo(2)->get();
 
     }
 
