@@ -6,6 +6,7 @@ use CollabCorp\Formatter\Concerns\ProcessesMethodCallsOnArrays;
 use CollabCorp\Formatter\ConverterManager;
 use CollabCorp\Formatter\Converters\ArrayConverter;
 use CollabCorp\Formatter\Exceptions\FormatterException;
+use CollabCorp\Formatter\Formatter;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -81,7 +82,11 @@ class Formatter
 
         throw_if(is_null($formatter), FormatterException::notFound($method));
 
-        $formatter = $formatter->create(is_callable($previous) ? $previous() : $previous);
+        if (($previous instanceof Formatter || is_subclass_of($previous, Formatter::class)) && is_callable($previous)) {
+            $previous = $previous();
+        }
+
+        $formatter = $formatter->create($previous);
 
         return $formatter->$method(...$parameters);
     }
