@@ -377,7 +377,7 @@ $upper= (new Formatter("World"))->hello()->get(); // "Hello World"
 
 <ul>
     <li>
-        <a href="#roundto">roundTo</a>
+        <a href="#decimals">decimals</a>
     </li>
     <li>
         <a href="#add">add</a>
@@ -661,7 +661,7 @@ Note: These simply are methods called using the Carbon Library. These are the on
     <strong>Note:</strong>
     The math formatter/conversion methods  in this package makes use of the `bcmath` extension for precision math. In the event that the    `bcmath` functions are unavailable, then it will fall back to native math operations requiring php 5.6+. In addition,when using `bcmath`, all values are scaled to be 64 decimal places for precision math. If you want to format how many decimal places, consider chaining `roundTo` method.
 
-  * ### roundTo
+  * ### decimals
     format a number to have the speficied number of decimal places:
     ```php
     //22.00
