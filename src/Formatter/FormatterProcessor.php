@@ -52,7 +52,7 @@ class FormatterProcessor
                         $request[$inputKey] = $this->handleMethodCallsOnArrayInput($request[$inputKey], $method, $params);
                     } else {
                         //always return the value not the class
-                        $request[$inputKey] = (string)Formatter::call($method, $params, $request[$inputKey]);
+                        $request[$inputKey] = Formatter::call($method, $params, $request[$inputKey])->get();
                     }
                 }
             }
@@ -94,11 +94,11 @@ class FormatterProcessor
 
                 $data = data_get($request, $input);
                 if (!is_null($data) && strpos($input, ".")) {
-                    data_set($request, $input, (string)Formatter::call($method, $params, $data));
+                    data_set($request, $input, Formatter::call($method, $params, $data)->get());
                 } elseif (is_array($request[$input])) {
                     $request[$input] = $this->handleMethodCallsOnArrayInput($request[$input], $method, $params);
                 } else {
-                    $request[$input] = (string)Formatter::call($method, $params, $request[$input]);
+                    $request[$input] = Formatter::call($method, $params, $request[$input])->get();
                 }
             }
         }

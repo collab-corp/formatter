@@ -23,7 +23,7 @@ trait ProcessesMethodCallsOnArrays
             if (is_array($value)) {
                 $newValues[$key] = $this->handleMethodCallsOnArrayInput($value, $method, $params);
             } else {
-                $newValues[$key] =  (string)Formatter::call($method, $params, $value);
+                $newValues[$key] =  Formatter::call($method, $params, $value)->get();
             }
         }
 
