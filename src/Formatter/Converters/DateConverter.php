@@ -35,7 +35,7 @@ class DateConverter extends Formatter
     /**
      * Convert our carbon instance to a date format
      * @param String $dateFormat
-     * @return self
+     * @return this
      */
     public function format($dateFormat)
     {
@@ -47,7 +47,7 @@ class DateConverter extends Formatter
 
     /**
      * Convert our value to a carbon instance
-     * @return  self
+     * @return  this
      */
     public function toCarbon()
     {
@@ -58,7 +58,7 @@ class DateConverter extends Formatter
 
     /**
     * Set a timezone on our carbon instance
-    * @return  self
+    * @return  this
     */
     public function setTimezone($tz)
     {
@@ -69,7 +69,7 @@ class DateConverter extends Formatter
     /**
      * Add years to our carbon instance
      * @param mixed $years
-     * @return self
+     * @return this
      */
     public function addYears($years)
     {
@@ -80,7 +80,7 @@ class DateConverter extends Formatter
     /**
      * Add months to our carbon instance
      * @param mixed $months
-     * @return self
+     * @return this
      */
     public function addMonths($months)
     {
@@ -91,7 +91,7 @@ class DateConverter extends Formatter
     /**
      * Add weeks to our carbon instance
      * @param mixed $weeks
-     * @return self
+     * @return this
      */
     public function addWeeks($weeks)
     {
@@ -103,7 +103,7 @@ class DateConverter extends Formatter
     /**
     * Add days to our carbon instance
     * @param mixed $days
-    * @return self
+    * @return this
     */
     public function addDays($days)
     {
@@ -116,7 +116,7 @@ class DateConverter extends Formatter
     /**
     * Add hours to our carbon instance
     * @param mixed $hours
-    * @return self
+    * @return this
     */
     public function addHours($hours)
     {
@@ -128,7 +128,7 @@ class DateConverter extends Formatter
     /**
      * Add minutes to our carbon instance
      * @param mixed $minutes
-     * @return self
+     * @return this
      */
     public function addMinutes($minutes)
     {
@@ -139,7 +139,7 @@ class DateConverter extends Formatter
     /**
     * Add seconds to our carbon instance
     * @param mixed $seconds
-    * @return self
+    * @return this
     */
     public function addSeconds($seconds)
     {
@@ -151,7 +151,7 @@ class DateConverter extends Formatter
     /**
      * Subtract years from our carbon instance
      * @param mixed $years
-     * @return self
+     * @return this
      */
     public function subYears($years)
     {
@@ -163,7 +163,7 @@ class DateConverter extends Formatter
     /**
     * Subtract months to our carbon instance
     * @param mixed $months
-    * @return self
+    * @return this
     */
     public function subMonths($months)
     {
@@ -174,7 +174,7 @@ class DateConverter extends Formatter
     /**
      * Subtract weeks to our carbon instance
      * @param mixed $weeks
-     * @return self
+     * @return this
      */
     public function subWeeks($weeks)
     {
@@ -186,7 +186,7 @@ class DateConverter extends Formatter
     /**
     * Subtract days to our carbon instance
     * @param mixed $days
-    * @return self
+    * @return this
     */
     public function subDays($days)
     {
@@ -198,7 +198,7 @@ class DateConverter extends Formatter
     /**
     * Subtract hours to our carbon instance
     * @param mixed $hours
-    * @return self
+    * @return this
     */
     public function subHours($hours)
     {
@@ -210,7 +210,7 @@ class DateConverter extends Formatter
     /**
      * Subtract minutes to our carbon instance
      * @param mixed $minutes
-     * @return self
+     * @return this
      */
     public function subMinutes($minutes)
     {
@@ -221,7 +221,7 @@ class DateConverter extends Formatter
     /**
     * Subtract seconds to our carbon instance
     * @param mixed $seconds
-    * @return self
+    * @return this
     */
     public function subSeconds($seconds)
     {

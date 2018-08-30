@@ -42,12 +42,34 @@ class StringConverter extends Formatter
         'trim',
         'truncate',
         'toUpper',
+        'toBool',
         'toLower',
         'url'
     ];
+
+    /**
+     * Convert the string value
+     * to a boolean value.
+     * @return this
+     */
+    protected function toBool()
+    {
+        $isString = is_string($this->value);
+
+        $this->value = $isString ? strtolower($this->value) : $this->value;
+        if ($this->value === 'true' || $this->value == '1') {
+            $this->value = true;
+        } elseif ($this->value === 'false' || $this->value == '0') {
+            $this->value = false;
+        } elseif ($isString) {
+            $this->value = filter_var($this->value, FILTER_VALIDATE_BOOLEAN);
+        }
+
+        return $this;
+    }
     /**
      * Change a 9 numeric value to a social security format i.e. xxx-xx-xxxx
-     * @return self
+     * @return this
      */
     public function ssn()
     {
@@ -61,7 +83,7 @@ class StringConverter extends Formatter
      * till we hit the end of the value.
      * @param  integer $nth
      * @param  string $insert
-     * @return selfe
+     * @return this
      */
     public function insertEvery($nth, $insert)
     {
@@ -71,7 +93,7 @@ class StringConverter extends Formatter
     /**
      * Truncate off the specifed number of characters
      * @param  $takeOff
-     * @return self
+     * @return this
      */
     public function truncate($takeOff = 0)
     {
@@ -81,7 +103,7 @@ class StringConverter extends Formatter
     /**
      * Add the given value to our value if it does not already end with the value
      * @param string $finish
-     * @return self
+     * @return this
      */
     public function finish($finish)
     {
@@ -91,7 +113,7 @@ class StringConverter extends Formatter
     /**
      * Add the given value to our value if it does not already start with the value
      * @param string $start
-     * @return self
+     * @return this
      */
     public function start($start)
     {
@@ -101,7 +123,7 @@ class StringConverter extends Formatter
     /**
      * Get everything before the specified value
      * @param string $before
-     * @return self
+     * @return this
      */
     public function before($before)
     {
@@ -111,7 +133,7 @@ class StringConverter extends Formatter
     /**
      * Get everything after the specified value
      * @param string $before
-     * @return self
+     * @return this
      */
     public function after($after)
     {
@@ -121,7 +143,7 @@ class StringConverter extends Formatter
     /**
      * Prefix something onto our value
      * @param string $prefix
-     * @return self
+     * @return this
      */
     public function prefix($prefix)
     {
@@ -131,7 +153,7 @@ class StringConverter extends Formatter
     /**
      * Add a suffix onto our value
      * @param string $suffix
-     * @return self
+     * @return this
      */
     public function suffix($suffix)
     {
@@ -141,7 +163,7 @@ class StringConverter extends Formatter
 
     /**
      * Convert the value to camel case.
-     * @return self
+     * @return this
      */
     public function camelCase()
     {
@@ -151,7 +173,7 @@ class StringConverter extends Formatter
     }
     /**
      * Convert the value to a slug friendly string.
-     * @return self
+     * @return this
      */
     public function slug()
     {
@@ -161,7 +183,7 @@ class StringConverter extends Formatter
     }
     /**
      * Formatter the value to kebab case.
-     * @return self
+     * @return this
      */
     public function kebabCase()
     {
@@ -171,7 +193,7 @@ class StringConverter extends Formatter
     }
     /**
      * Formatter the value to snake case.
-     * @return self
+     * @return this
      */
     public function snakeCase()
     {
@@ -182,7 +204,7 @@ class StringConverter extends Formatter
 
     /**
      * Formatter the value to title case.
-     * @return self
+     * @return this
      */
     public function titleCase()
     {
@@ -192,7 +214,7 @@ class StringConverter extends Formatter
     }
     /**
      * Formatter the value to studly case.
-     * @return self
+     * @return this
      */
     public function studlyCase()
     {
@@ -203,7 +225,7 @@ class StringConverter extends Formatter
 
     /**
      * Formatter the value to its plural form.
-     * @return self
+     * @return this
      */
     public function plural()
     {
@@ -213,8 +235,19 @@ class StringConverter extends Formatter
     }
 
     /**
+     * Convert the string to "pretty/label"
+     * format. eg. some_column_name-> Some Column Name
+     * @return this
+     */
+    public static function label()
+    {
+        $this->value = preg_replace("/[^A-Za-z0-9]/", " ", $this->value);
+        $this->value = Str::title($this->value);
+        return $this;
+    }
+    /**
      * Formatter the value to a pretty phone format (xxx) xxx-xxxx
-     * @return self
+     * @return this
      */
     public function phone()
     {
@@ -227,7 +260,7 @@ class StringConverter extends Formatter
     }
     /**
      * Encrypt our value
-     * @return self
+     * @return this
      */
     public function encrypt()
     {
@@ -238,7 +271,7 @@ class StringConverter extends Formatter
 
     /**
      * Decrypt our value
-     * @return self
+     * @return this
      */
     public function decrypt()
     {
@@ -247,7 +280,7 @@ class StringConverter extends Formatter
     }
     /**
      * Hash our value with bcrypt
-     * @return self
+     * @return this
      */
     public function bcrypt()
     {
@@ -260,7 +293,7 @@ class StringConverter extends Formatter
      * and append a string
      * @param  string $limit
      * @param  string $append
-     * @return self
+     * @return this
      */
     public function limit($limit = null, $append = '')
     {
@@ -273,7 +306,7 @@ class StringConverter extends Formatter
 
     /**
      * Convert the string to all lower case letters.
-     * @return self
+     * @return this
      */
     public function toLower()
     {
@@ -283,7 +316,7 @@ class StringConverter extends Formatter
     }
     /**
     * Convert the string to all lower case letters.
-    * @return self
+    * @return this
     */
     public function toUpper()
     {
@@ -295,7 +328,7 @@ class StringConverter extends Formatter
      * Replace all the given characters with the given character
      * @param  string $search
      * @param  string $replace
-     * @return self
+     * @return this
      */
     public function replace($search, $replace = '')
     {
@@ -305,7 +338,7 @@ class StringConverter extends Formatter
     }
     /**
      * Remove everything but numbers from the value
-     * @return self
+     * @return this
      */
     public function onlyNumbers()
     {
@@ -315,7 +348,7 @@ class StringConverter extends Formatter
     }
     /**
      * Convert the value to a url using laravels url helper
-     * @return self
+     * @return this
      */
     public function url()
     {
@@ -325,7 +358,7 @@ class StringConverter extends Formatter
 
     /**
      * Remove everything but letters from the value
-     * @return self
+     * @return this
      */
     public function onlyLetters()
     {
@@ -338,7 +371,7 @@ class StringConverter extends Formatter
      * Remove all non alpha numeric characters
      * including spaces, unless specified.
      * @param  boolean $allowSpaces
-     * @return self
+     * @return this
      */
     public function onlyAlphaNumeric($allowSpaces = false)
     {
@@ -352,7 +385,7 @@ class StringConverter extends Formatter
     /**
      * Remove Leading and ending characters
      * @param  string $trimOff
-     * @return self
+     * @return this
      */
     public function trim($trimOff = ' ')
     {
@@ -363,7 +396,7 @@ class StringConverter extends Formatter
     /**
      * Remove leading characters
      * @param  string $trimOff
-     * @return self
+     * @return this
      */
     public function ltrim($trimOff = ' ')
     {
@@ -374,7 +407,7 @@ class StringConverter extends Formatter
     /**
      * Remove ending characters
      * @param  string $trimOff
-     * @return self
+     * @return this
      */
     public function rtrim($trimOff = ' ')
     {

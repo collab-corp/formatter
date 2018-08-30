@@ -199,7 +199,8 @@ Then you can simply just call as needed `convert` as needed:
 
 public store(Request $request){
 
-    $newData = $this->convert($request, [
+    //array and collections return converted data, $request object will return this
+    $newData = $this->convert($request->all(), [
 
         'phone'=>'onlyNumbers|phone',
 
@@ -219,15 +220,23 @@ public store(Request $request){
 
 ```
 <strong>
- Note: If you pass in the request object without calling all(), the data will be replaced  for you automatically, otherwise, you'll be responsible for calling replace() on the request object yourself, if you'd like to.
-</strong>
+ Note:
+</strong>If you pass in the request object without calling all(), the data will be replaced  for you automatically,however, you can specify not to have the request data replaced by passing in false to the 3rd parameter. Of course this is only if the
+ given variable is a `\Illuminate\Http\Request` object:
+
+
+```php
+
+$this->conver($request, [...], false);
+```
 
 
 You may also reuse this trait outside of controller for your models or collections. Really the trait is usable for array input  in general. Simply pass in the array wanted. If you pass in a collection, the trait will extract the underlying array. If you pass in something that is `Arrayable` we will call `toArray`.
 
-<strong>
-   Regardless of what you pass in, a collection of the new converted data will always be returned.
-</strong>
+
+
+
+
 
 
 # Methods are whitelisted
@@ -360,7 +369,13 @@ $upper= (new Formatter("World"))->hello()->get(); // "Hello World"
         <a href="#ltrim">ltrim</a>
     </li>
     <li>
+        <a href="#label">label</a>
+    </li>
+    <li>
         <a href="#rtrim">rtrim</a>
+    </li>
+     <li>
+        <a href="#tobool">toBool</a>
     </li>
     <li>
         <a href="#toupper">toUpper</a>
@@ -623,6 +638,14 @@ Note: These simply are methods called using the Carbon Library. These are the on
     //something####
     Formatter::create('####something####')->trim("#")->get();
     ```
+  * ### label
+    Convert the string to a "pretty label":
+    ```php
+    //'Some Column Name'
+    Formatter::create('some_column_name')->label()->get();
+    //something####
+    Formatter::create('####something####')->trim("#")->get();
+    ```
   * ### rtrim
     removes all ending spaces/characters from the value:
     ```php
@@ -631,6 +654,15 @@ Note: These simply are methods called using the Carbon Library. These are the on
     //####something
     Formatter::create('####something####')->rtrim("#")->get();
     ```
+  * ### toBool
+     Convert a string value to its boolean representation.
+    Note: `'true|1'` and `'false|1'` will be converted  to their boolean values, other
+    strings will be processed using filter_var()
+    ```php
+    //true
+    Formatter::create('true')->toBool()->get();
+    ```
+
   * ### toUpper
 
     Convert the string to uppercase:

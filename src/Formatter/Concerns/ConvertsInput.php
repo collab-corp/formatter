@@ -14,9 +14,10 @@ trait ConvertsInput
      * the given formatters.
      * @param  mixed $request
      * @param  array $formatters
+     * @param  bool $replaceRequestData
      * @return Illuminate\Support\Collection
      */
-    protected function convert($request, array $formatters=[])
+    protected function convert($request, array $formatters=[], bool $replaceRequestData = true)
     {
         if (($isRequest = $request instanceof Request)|| $request instanceof Collection) {
             $input = $request->all();
@@ -26,9 +27,11 @@ trait ConvertsInput
 
         $data = Formatter::convert($formatters, $input);
 
-        //if we're working with a equest object, automatically replace data
         if ($isRequest) {
-            $request->replace($data->all());
+            //if we're working with a request object, automatically replace data if specified.
+            if ($replaceRequestData) {
+                $request->replace($data->all());
+            }
         }
 
         return $data;
