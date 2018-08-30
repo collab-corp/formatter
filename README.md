@@ -63,7 +63,7 @@ class SomeModel extends Model{
 
     public function getProductPriceAttribute(){
         //format our number to 2 decimal places or however many places you want
-        return new Formatter($this->attributes['price'])->roundTo(2)->get();
+        return new Formatter($this->attributes['price'])->decimals(2)->get();
 
     }
 
@@ -691,13 +691,13 @@ Note: These simply are methods called using the Carbon Library. These are the on
 
     ##  Math Methods
     <strong>Note:</strong>
-    The math formatter/conversion methods  in this package makes use of the `bcmath` extension for precision math. In the event that the    `bcmath` functions are unavailable, then it will fall back to native math operations requiring php 5.6+. In addition,when using `bcmath`, all values are scaled to be 64 decimal places for precision math. If you want to format how many decimal places, consider chaining `roundTo` method.
+    The math formatter/conversion methods  in this package makes use of the `bcmath` extension for precision math. In the event that the    `bcmath` functions are unavailable, then it will fall back to native math operations requiring php 5.6+. In addition,when using `bcmath`, all values are scaled to be 64 decimal places for precision math. If you want to format how many decimal places, consider chaining `decimals` method.
 
   * ### decimals
     format a number to have the speficied number of decimal places:
     ```php
     //22.00
-    Formatter::create(20)->add(2)->roundTo(2)->get();
+    Formatter::create(20)->add(2)->decimals(2)->get();
     ```
   * ### add
     add a given number to the current numeric value.Automatically scales 0 decimal places unless specified as 2nd param:
