@@ -19,6 +19,7 @@ class StringConverter extends Formatter
         'camelCase',
         'decrypt',
         'encrypt',
+        'explode',
         'finish',
         'insertEvery',
         'kebabCase',
@@ -46,7 +47,18 @@ class StringConverter extends Formatter
         'toLower',
         'url'
     ];
+    /**
+     * Explode the string into an array
+     * using the given delimiter.
+     * @param  string $delimiter
+     * @return this
+     */
+    public function explode($delimiter = ",")
+    {
+        $this->value = explode($delimiter, $this->value);
 
+        return $this;
+    }
     /**
      * Convert the string value
      * to a boolean value.

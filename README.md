@@ -342,6 +342,9 @@ $upper= (new Formatter("World"))->hello()->get(); // "Hello World"
         <a href="#limit">limit</a>
     </li>
     <li>
+        <a href="#explode">explode</a>
+    </li>
+    <li>
         <a href="#encrypt">encrypt</a>
     </li>
     <li>
@@ -581,6 +584,12 @@ Note: These simply are methods called using the Carbon Library. These are the on
     ```php
     //'{some encrypted string}'
     Formatter::create('someString')->encrypt()->get();
+    ```
+  * ### explode
+    Explode the string into an array with the given delimiter(default is comma):
+    ```php
+    //['foo', 'bar', 'baz']
+    Formatter::create('foo|bar|baz')->explode('|')->get();
     ```
   * ### decrypt
     decrypt the value:
