@@ -18,7 +18,23 @@ class StringConverterTest extends TestCase
         $startWith ='Im a prefix that is added: original sentence->';
         $this->assertEquals($startWith.$this->formatter->get(), $this->formatter->start($startWith)->get());
     }
+    /**
+     * @test
+     */
+    public function explodeMethod()
+    {
+        $this->formatter->setValue('foo|bar|baz');
+        $this->assertEquals(['foo', 'bar', 'baz'], $this->formatter->explode('|')->get());
+    }
+    /**
+     * @test
+     */
+    public function toBoolMethod()
+    {
+        $this->formatter->setValue('true');
 
+        $this->assertEquals(true, $this->formatter->toBool()->get());
+    }
     /**
      * @test
      */
