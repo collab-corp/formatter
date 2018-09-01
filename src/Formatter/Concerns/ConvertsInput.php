@@ -23,6 +23,8 @@ trait ConvertsInput
             $input = $request->all();
         } elseif ($request instanceof Arrayable) {
             $input = $request->toArray();
+        } else {
+            $input = $request;
         }
 
         $data = Formatter::convert($formatters, $input);
