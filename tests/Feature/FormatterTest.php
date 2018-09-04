@@ -32,7 +32,7 @@ class FormatterTest extends TestCase
         $this->assertEquals(['123',['123','456', '678']], $formatter->all());
     }
     /** @test */
-    public function it_is_macroable()
+    public function itIsMacroable()
     {
         Formatter::macro('capitalize', function () {
             return $this->setValue(strtoupper($this->value));
@@ -45,5 +45,28 @@ class FormatterTest extends TestCase
         });
 
         $this->assertEquals("hello sergio", (new Formatter("sergio"))->hello()->get());
+    }
+
+    /** @test */
+    public function ignoresEmptyStringNullOrArrays()
+    {
+        $text = Formatter::create("");
+
+        Formatter::ignoreIfValueIsEmpty(true);
+
+        $text = $text->suffix("foo");
+
+        $this->assertEquals(null, $text->get());
+
+        Formatter::ignoreIfValueIsEmpty(false);
+    }
+    /** @test */
+    public function runsOnEmptyStringNullOrArraysByDefault()
+    {
+        $text = Formatter::create("");
+
+        $text = $text->suffix("foo");
+
+        $this->assertEquals('foo', $text->get());
     }
 }

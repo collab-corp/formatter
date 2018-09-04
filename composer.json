@@ -18,7 +18,10 @@
     "autoload": {
         "psr-4": {
             "CollabCorp\\": "src/"
-        }
+        },
+        "files" : [
+            "src/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

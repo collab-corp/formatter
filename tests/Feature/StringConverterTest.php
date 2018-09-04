@@ -16,6 +16,7 @@ class StringConverterTest extends TestCase
     public function startMethod()
     {
         $startWith ='Im a prefix that is added: original sentence->';
+
         $this->assertEquals($startWith.$this->formatter->get(), $this->formatter->start($startWith)->get());
     }
     /**

@@ -20,6 +20,7 @@ $formatter = app('collab-corp.formatter'); //returns Formatter instance with a d
 
 $formatter = $formatter->setValue('foobar');
 
+
 ```
 
 For lower versions of laravel you will have to manually register `\CollabCorp\Formatter\FormatterServiceProvider::class`
@@ -43,7 +44,8 @@ new Formatter('yourValue');
 //or you could use static create method
 Formatter::create("yourValue");
 
-
+//or use the binded 'collab-corp.formatter' instance with our helper
+formatter('yourValue')->onlyNumbers()->get();
 
 ```
 
@@ -129,6 +131,52 @@ $values = (new Formatter(['123something', ["foo123","bar456",'baz678']]))->onlyN
 //returns ['123', ['123','456','678']]
 
 ```
+### Ignore empty strings/null or empty arrays
+
+By default, when you  call formatter methods on a value, the class will run regardless of value. In some cases however, you may not want formatter to run conversions on an input that is an empty string, null or an empty array. Consider the following scenario:
+
+You have a form to allow your users to update their email,username and password. The password field may be nullable and you will only update it if its not null or empty. You may have set up a converter to automatically convert the password to a hashed string
+
+
+```php
+
+
+$this->convert($request, [
+    'password'=>"bcrypt",
+]);
+```
+
+However, this will run `bcrypt` on the value even if its an empty string, resulting in a password getting set to a hashed value of an empty string, which can be a huge security risk. In these cases, you can toggle the formatter to ignore empty strings,null and empty arrays:
+
+```php
+Formatter::ignoreIfValueIsEmpty(true)
+
+$this->convert($request, [
+    'password'=>"bcrypt",
+]);
+
+$pw = $request->password;
+
+//will only be bcrypted if the request value was not an empty string or null value.
+dd($pw);
+
+//turn off
+Formatter::ignoreIfValueIsEmpty(false);
+
+//other formatter calls whos values can be empty
+```
+
+You may also specify for a certain input to be skipped if the value is empty in mass conversions:
+
+```php
+$this->convert($request, [
+   '*password*'=>"bailIfEmpty|bcrypt",
+]);
+
+
+```
+In this case `bailIfEmpty` will be executed and password will not be hashed if it's empty string or null. The conversion will simply move on to the next request input key.
+
 
 ## Mass Conversions
 

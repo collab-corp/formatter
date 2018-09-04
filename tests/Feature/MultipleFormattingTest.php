@@ -114,7 +114,6 @@ class MultipleFormattingTest extends TestCase
 
         $request = Formatter::convert($formatters, $request);
 
-
         $this->assertEquals('Peter Parker', $request['name']);
         $this->assertEquals('peter parker', $request['something_name']);
         $this->assertEquals('(123)456-7890', $request['phone']);

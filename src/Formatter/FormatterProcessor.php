@@ -4,6 +4,7 @@ namespace CollabCorp\Formatter;
 
 use CollabCorp\Formatter\Concerns\ProcessesMethodCallsOnArrays;
 use CollabCorp\Formatter\Formatter;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class FormatterProcessor
@@ -24,7 +25,23 @@ class FormatterProcessor
 
         return $request;
     }
+    /**
+     * Determine if the given value needs to be
+     * skipped in mass conversions
+     * @param  mixed $value
+     * @return bool
+     */
+    protected function bailIfEmpty($value)
+    {
+        if (is_array($value) && empty($value)) {
+            return true;
+        }
+        if (is_null($value) || $value == '') {
+            return true;
+        }
 
+        return false;
+    }
     /**
     * Convert pattern input keys
     * @param  array $request
@@ -48,6 +65,10 @@ class FormatterProcessor
                     $params = $details['params'];
 
                     $method = $details['method'];
+                    if ($method== 'bailIfEmpty' && $this->bailIfEmpty($request[$inputKey])) {
+                        break;
+                    }
+
                     if (is_array($request[$inputKey])) {
                         $request[$inputKey] = $this->handleMethodCallsOnArrayInput($request[$inputKey], $method, $params);
                     } else {
@@ -92,6 +113,9 @@ class FormatterProcessor
 
                 $method = $details['method'];
 
+                if ($method== 'bailIfEmpty' && $this->bailIfEmpty($request[$inputKey])) {
+                    break;
+                }
                 $data = data_get($request, $input);
                 if (!is_null($data) && strpos($input, ".")) {
                     data_set($request, $input, Formatter::call($method, $params, $data)->get());

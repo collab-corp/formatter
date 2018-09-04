@@ -36,6 +36,23 @@ class Formatter
     protected static $manager;
 
     /**
+     * Only run formatter methods if values are not null || empty string
+     * @var boolean
+     */
+    protected static $ignoreIfValueIsEmpty = false;
+
+
+    /**
+     * Only run formatter methods if the given value
+     * is not an 'empty' value (empty string|null|empty array)
+     * @param  bool $run
+     * @return void
+     */
+    public static function ignoreIfValueIsEmpty(bool $run)
+    {
+        static::$ignoreIfValueIsEmpty = $run;
+    }
+    /**
      * Call macros of proxy calls to other formatters.
      *
      * @param  String $method
@@ -86,9 +103,39 @@ class Formatter
             $previous = $previous();
         }
 
-        $formatter = $formatter->create($previous);
 
+
+        if (!static::shouldRun($previous)) {
+            return new static($previous);
+        }
+        $formatter = $formatter->create($previous);
+        // dd($formatter->$method(...$parameters));
         return $formatter->$method(...$parameters);
+    }
+
+    /**
+     * Determine if the value is empty
+     * and a formatter should run
+     * via static setting
+     * @param  mixed $value
+     * @return bool
+     */
+    protected static function shouldRun($value)
+    {
+        if (static::$ignoreIfValueIsEmpty) {
+            if ($value instanceof Collection) {
+                $value = $value->all();
+            }
+
+            if (is_array($value) && empty($value)) {
+                return false;
+            }
+            if (is_null($value) || $value == '') {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 
@@ -123,7 +170,7 @@ class Formatter
      */
     public function __toString()
     {
-        if ($this->value instanceof Collection) {
+        if ($this->value instanceof Collection || is_array($this->value)) {
             throw FormatterException::stringCastOnMultipleValues();
         }
         return (string) $this->get();
@@ -160,7 +207,7 @@ class Formatter
     }
     /**
     * Get the first value from the instance
-    * if the value is a collection instance
+    * if the value is a collection instance or array
     * or just return the underlying simple value
     * @return mixed $value
     */
@@ -168,6 +215,23 @@ class Formatter
     {
         if ($this->value instanceof Collection) {
             return $this->value->first();
+        } elseif (is_array($this->value)) {
+            return reset($this->value);
+        }
+        return $this->value;
+    }
+    /**
+    * Get the last value from the instance
+    * if the value is a collection instance or array
+    * or just return the underlying simple value
+    * @return mixed $value
+    */
+    public function last()
+    {
+        if ($this->value instanceof Collection) {
+            return $this->value->last();
+        } elseif (is_array($this->value)) {
+            return end($this->value);
         }
         return $this->value;
     }
@@ -193,6 +257,8 @@ class Formatter
             $this->value = collect($value);
         } elseif ($value instanceof Arrayable) {
             $this->value =  collect($value->toArray());
+        } elseif (is_array($value)) {
+            $this->value =  collect($value);
         } elseif (is_null($value) || $value == '') {
             /*
             Automatically treat empty strings as null, this is due to
