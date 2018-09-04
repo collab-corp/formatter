@@ -65,8 +65,11 @@ class FormatterProcessor
                     $params = $details['params'];
 
                     $method = $details['method'];
+
                     if ($method== 'bailIfEmpty' && $this->bailIfEmpty($request[$inputKey])) {
                         break;
+                    } elseif ($method== 'bailIfEmpty') {
+                        continue;
                     }
 
                     if (is_array($request[$inputKey])) {
@@ -115,6 +118,8 @@ class FormatterProcessor
 
                 if ($method== 'bailIfEmpty' && $this->bailIfEmpty($request[$inputKey])) {
                     break;
+                } elseif ($method== 'bailIfEmpty') {
+                    continue;
                 }
                 $data = data_get($request, $input);
                 if (!is_null($data) && strpos($input, ".")) {
