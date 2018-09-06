@@ -68,10 +68,11 @@ class StringConverter extends Formatter
     {
         $isString = is_string($this->value);
 
-        $this->value = $isString ? strtolower($this->value) : $this->value;
-        if ($this->value === 'true' || $this->value == '1') {
+        $value = $isString ? strtolower($this->value) : $this->value;
+
+        if ($value === 'true' || $value === '1') {
             $this->value = true;
-        } elseif ($this->value === 'false' || $this->value == '0') {
+        } elseif ($value === 'false' || $value === '0') {
             $this->value = false;
         } elseif ($isString) {
             $this->value = filter_var($this->value, FILTER_VALIDATE_BOOLEAN);
