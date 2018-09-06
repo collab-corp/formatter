@@ -109,7 +109,7 @@ class Formatter
             return new static($previous);
         }
         $formatter = $formatter->create($previous);
-        // dd($formatter->$method(...$parameters));
+
         return $formatter->$method(...$parameters);
     }
 
@@ -130,7 +130,7 @@ class Formatter
             if (is_array($value) && empty($value)) {
                 return false;
             }
-            if (is_null($value) || $value == '') {
+            if (is_null($value) || $value === '') {
                 return false;
             }
         }
@@ -259,7 +259,7 @@ class Formatter
             $this->value =  collect($value->toArray());
         } elseif (is_array($value)) {
             $this->value =  collect($value);
-        } elseif (is_null($value) || $value == '') {
+        } elseif (is_null($value) || $value === '') {
             /*
             Automatically treat empty strings as null, this is due to
             some issues with laravel's convert empty string to null middleware
