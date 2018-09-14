@@ -3,6 +3,8 @@
 namespace CollabCorp\Formatter;
 
 use CollabCorp\Formatter\Concerns\ProcessesMethodCallsOnArrays;
+use CollabCorp\Formatter\Contracts\Convertible;
+use CollabCorp\Formatter\Conversion;
 use CollabCorp\Formatter\Formatter;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -10,6 +12,128 @@ use Illuminate\Support\Str;
 class FormatterProcessor
 {
     use ProcessesMethodCallsOnArrays;
+
+    /**
+    * Construct a new formatter processor instance
+    * @param array $request
+    * @param array $explicitKeys
+    * @param array $pattern
+    * @param array $request
+    * @return $this
+    */
+    public function __construct(array $request, array $explicitKeys, array $patterns)
+    {
+        $this->data = $request;
+
+        $this->explicitKeys = $explicitKeys;
+
+        $this->patterns = $patterns;
+
+
+        $request = $this->convertExplicitKeys($request, $explicitKeys);
+
+        dd("end");
+        return $this;
+    }
+
+    /**
+    * Explode the explicit formatter into an array if necessary.
+    *
+    * @param  mixed  $formatter
+    * @return array
+    */
+    protected function explodeMethodsToCall($formatter)
+    {
+        if (is_string($formatter)) {
+            return explode('|', trim($formatter, "|"));
+        } elseif (is_object($formatter)) {
+            return [$formatter];
+        }
+
+        return [(string) $formatter];
+    }
+    /**
+    * Call a formatter method on the given attribute
+    * using the formatter being processed.
+    *
+    * @param  string attribute
+    * @param  mixed  $formatter
+    * @return mixed
+    */
+    protected function callMethodOnAttribute($attribute, $formatter)
+    {
+        if ($formatter instanceof \Closure) {
+        } elseif ($formatter instanceof Convertible) {
+            dd("is conversion object");
+        }
+
+
+
+
+        // return  $formatter;
+    }
+
+    /**
+     * Parse a string based formatter.
+     *
+     * @param  string  $formatters
+     * @return array
+     * @see  Illuminate\Validation\ValidationRuleParser
+     */
+    protected static function parseStringFormatter($formatters)
+    {
+        $parameters = [];
+
+        // {method}:{parameters}
+        if (strpos($formatters, ':') !== false) {
+            list($formatters, $parameter) = explode(':', $formatters, 2);
+
+            $parameters = str_getcsv($parameter);
+        }
+
+        return [Str::studly(trim($formatters)), $parameters];
+    }
+    /**
+      * Convert explicit input keys
+      * @return $this
+      */
+    protected function convertExplicitKeys()
+    {
+        $explicitKeys = collect($this->explicitKeys);
+
+        $explicitKeys->each(function ($methods, $key) {
+            dd($this->explodeMethodsToCall(new Conversion), $key, new Conversion instanceof Convertible);
+        });
+
+        return $this;
+        // foreach ($explictKeys as $input => $formatters) {
+        //     $formatters = explode('|', trim($formatters, "|"));
+
+        //     foreach ($formatters as $methods) {
+        //         $details = $this->extractIterationDetails($methods);
+
+        //         $params = $details['params'];
+
+        //         $method = $details['method'];
+
+        //         if ($method== 'bailIfEmpty' && $this->bailIfEmpty($request[$inputKey])) {
+        //             break;
+        //         } elseif ($method== 'bailIfEmpty') {
+        //             continue;
+        //         }
+        //         $data = data_get($request, $input);
+        //         if (!is_null($data) && strpos($input, ".")) {
+        //             data_set($request, $input, Formatter::call($method, $params, $data)->get());
+        //         } elseif (is_array($request[$input])) {
+        //             $request[$input] = $this->handleMethodCallsOnArrayInput($request[$input], $method, $params);
+        //         } else {
+        //             $request[$input] = Formatter::call($method, $params, $request[$input])->get();
+        //         }
+        //     }
+        // }
+
+        // return $request;
+    }
     /**
      * Process the formatters and convert the input
      * @param array $request
@@ -98,40 +222,21 @@ class FormatterProcessor
             'method'=>Str::before($iteration, ":")
         ];
     }
+
     /**
-      * Convert explicit input keys
-      * @param  array $request
-      * @param  array $explicitKeys
-      * @return array $request
-      */
-    private function convertExplicitKeys($request, $explictKeys)
+    * Explode the explicit formatter into an array if necessary.
+    *
+    * @param  mixed  $formatter
+    * @return array
+    */
+    protected function explodeFormatter($formatter)
     {
-        foreach ($explictKeys as $input => $formatters) {
-            $formatters = explode('|', trim($formatters, "|"));
-
-            foreach ($formatters as $methods) {
-                $details = $this->extractIterationDetails($methods);
-
-                $params = $details['params'];
-
-                $method = $details['method'];
-
-                if ($method== 'bailIfEmpty' && $this->bailIfEmpty($request[$inputKey])) {
-                    break;
-                } elseif ($method== 'bailIfEmpty') {
-                    continue;
-                }
-                $data = data_get($request, $input);
-                if (!is_null($data) && strpos($input, ".")) {
-                    data_set($request, $input, Formatter::call($method, $params, $data)->get());
-                } elseif (is_array($request[$input])) {
-                    $request[$input] = $this->handleMethodCallsOnArrayInput($request[$input], $method, $params);
-                } else {
-                    $request[$input] = Formatter::call($method, $params, $request[$input])->get();
-                }
-            }
+        if (is_string($formatter)) {
+            return explode('|', $formatter);
+        } elseif (is_object($formatter)) {
+            return [$this->getConvertibleObjectValue($formatter)];
         }
 
-        return $request;
+        // return array_map([$this, 'getConvertibleObjectValue'], $formatter);
     }
 }

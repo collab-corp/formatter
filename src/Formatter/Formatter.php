@@ -354,11 +354,7 @@ class Formatter
         }, ARRAY_FILTER_USE_KEY);
 
 
-        $request = (new FormatterProcessor())->process(
-            $request,
-            $explictKeys,
-            $patterns
-        );
+        $request = (new FormatterProcessor($request, $explictKeys, $patterns))->get();
 
         return collect($request);
     }

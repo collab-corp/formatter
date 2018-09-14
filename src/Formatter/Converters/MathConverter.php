@@ -7,6 +7,12 @@ use CollabCorp\Formatter\Formatter;
 class MathConverter extends Formatter
 {
     /**
+     * Cache for bcmath function exist
+     * checks.
+     * @var array
+     */
+    protected static $bcMathExistsCache =[];
+    /**
     * Whitelist of the allowed methods to be called on this class.
     * @var Array $whiteList
     */
