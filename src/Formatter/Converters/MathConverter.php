@@ -6,12 +6,7 @@ use CollabCorp\Formatter\Formatter;
 
 class MathConverter extends Formatter
 {
-    /**
-     * Cache for bcmath function exist
-     * checks.
-     * @var array
-     */
-    protected static $bcMathExistsCache =[];
+
     /**
     * Whitelist of the allowed methods to be called on this class.
     * @var Array $whiteList
@@ -26,6 +21,7 @@ class MathConverter extends Formatter
         'power',
         'percentage'
     ];
+
     /**
      * Make our value be a decimal of specified places
      * @param  $numberOfPlaces
@@ -52,7 +48,6 @@ class MathConverter extends Formatter
 
         return $this;
     }
-
     /**
      * Subtract a number from the our value
      * @param mixed $number
@@ -98,10 +93,8 @@ class MathConverter extends Formatter
             $this->value = bcpow($this->value, $number, 64);
         }
 
-
         return $this;
     }
-
     /**
      * Multiply the value by the given the numeric value
      * @param mixed $number
@@ -114,8 +107,6 @@ class MathConverter extends Formatter
         } else {
             $this->value = bcdiv($this->value, $number, 64);
         }
-
-
         return $this;
     }
 

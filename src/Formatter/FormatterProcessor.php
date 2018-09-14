@@ -3,6 +3,7 @@
 namespace CollabCorp\Formatter;
 
 use CollabCorp\Formatter\Concerns\ProcessesMethodCallsOnArrays;
+use CollabCorp\Formatter\Contracts\CheckForEmpty;
 use CollabCorp\Formatter\Contracts\Convertible;
 use CollabCorp\Formatter\Conversion;
 use CollabCorp\Formatter\Formatter;
@@ -15,25 +16,35 @@ class FormatterProcessor
 
     /**
     * Construct a new formatter processor instance
-    * @param array $request
-    * @param array $explicitKeys
-    * @param array $pattern
-    * @param array $request
+    * @param array $input
+    * @param array $explicitAttributes
+    * @param array $wildCardAttributes
     * @return $this
     */
-    public function __construct(array $request, array $explicitKeys, array $patterns)
+    public function __construct(array $input, array $explicitAttributes, array $wildCardAttributes)
     {
-        $this->data = $request;
+        $this->data = $input;
 
-        $this->explicitKeys = $explicitKeys;
+        $this->explicitAttributes = $explicitAttributes;
 
-        $this->patterns = $patterns;
+        $this->wildCardAttributes = $wildCardAttributes;
 
 
-        $request = $this->convertExplicitKeys($request, $explicitKeys);
+        $this->convertExplicitAttributes();
 
-        dd("end");
+        $this->convertWildCardAttributes();
+
+
         return $this;
+    }
+
+    /**
+     * Get the processed data
+     * @return array
+     */
+    public function get()
+    {
+        return $this->data;
     }
 
     /**
@@ -46,11 +57,9 @@ class FormatterProcessor
     {
         if (is_string($formatter)) {
             return explode('|', trim($formatter, "|"));
-        } elseif (is_object($formatter)) {
-            return [$formatter];
         }
 
-        return [(string) $formatter];
+        return is_array($formatter)? $formatter:[$formatter];
     }
     /**
     * Call a formatter method on the given attribute
@@ -62,92 +71,85 @@ class FormatterProcessor
     */
     protected function callMethodOnAttribute($attribute, $formatter)
     {
+        $input =  data_get($this->data, $attribute);
+
         if ($formatter instanceof \Closure) {
+            data_set($this->data, $attribute, call_user_func_array($formatter, [$input, $this->data]));
         } elseif ($formatter instanceof Convertible) {
-            dd("is conversion object");
+            data_set($this->data, $attribute, $formatter->convert($input, $this->data));
+        } elseif ((is_array($input) || $input instanceof Collection) && is_string($formatter)) {
+            $details = $this->extractFormatterDetails($formatter);
+            $this->processMethodCallOnArrayInput($attribute, $details, $input);
+        } elseif (is_string($formatter)) {
+            $details = $this->extractFormatterDetails($formatter);
+
+            $this->processMethodCall($attribute, $details, $input);
         }
-
-
-
-
         // return  $formatter;
     }
 
     /**
-     * Parse a string based formatter.
-     *
+     * Process method call on array/collection
+     * input.
+     * @param  string $attribute
+     * @param  array  $details
+     * @param  mixed  $input
+     * @return $this
+     */
+    protected function processMethodCallOnArrayInput($attribute, array $details, $input)
+    {
+        $isCollection = false;
+
+        if ($input instanceof Collection) {
+            $isCollection = true;
+            $input = $input->all();
+        }
+
+        $this->data[$attribute] = $this->handleMethodCallsOnArrayInput($input, $details[0], $details[1]);
+
+        //if we were originally working with a collection make it a collection again.
+        if ($isCollection) {
+            $this->data[$attribute] =collect($this->data[$attribute]);
+        }
+    }
+
+    /**
+     * Process method call on simple values
+     * @param  string $attribute
+     * @param  array  $details
+     * @param  mixed  $input
+     * @return $this
+     */
+    protected function processMethodCall($attribute, array $details, $input)
+    {
+        $input = data_get($this->data, $attribute);
+
+        if (!is_null($input) && strpos($attribute, ".") !== false) {
+            data_set($this->data, $attribute, Formatter::call($details[0], $details[1], $input)->get());
+        } else {
+            $this->data[$attribute] = Formatter::call($details[0], $details[1], $this->data[$attribute])->get();
+        }
+    }
+
+    /**
+     * Extract the method/parameters
+     * from a string based formatter
      * @param  string  $formatters
      * @return array
-     * @see  Illuminate\Validation\ValidationRuleParser
+     * @see  Illuminate\Validation\ValidationRuleParser@parseStringRule
      */
-    protected static function parseStringFormatter($formatters)
+    protected static function extractFormatterDetails($formatter)
     {
         $parameters = [];
 
         // {method}:{parameters}
-        if (strpos($formatters, ':') !== false) {
-            list($formatters, $parameter) = explode(':', $formatters, 2);
+        if (strpos($formatter, ':') !== false) {
+            list($formatter, $parameter) = explode(':', $formatter);
 
             $parameters = str_getcsv($parameter);
         }
 
-        return [Str::studly(trim($formatters)), $parameters];
-    }
-    /**
-      * Convert explicit input keys
-      * @return $this
-      */
-    protected function convertExplicitKeys()
-    {
-        $explicitKeys = collect($this->explicitKeys);
-
-        $explicitKeys->each(function ($methods, $key) {
-            dd($this->explodeMethodsToCall(new Conversion), $key, new Conversion instanceof Convertible);
-        });
-
-        return $this;
-        // foreach ($explictKeys as $input => $formatters) {
-        //     $formatters = explode('|', trim($formatters, "|"));
-
-        //     foreach ($formatters as $methods) {
-        //         $details = $this->extractIterationDetails($methods);
-
-        //         $params = $details['params'];
-
-        //         $method = $details['method'];
-
-        //         if ($method== 'bailIfEmpty' && $this->bailIfEmpty($request[$inputKey])) {
-        //             break;
-        //         } elseif ($method== 'bailIfEmpty') {
-        //             continue;
-        //         }
-        //         $data = data_get($request, $input);
-        //         if (!is_null($data) && strpos($input, ".")) {
-        //             data_set($request, $input, Formatter::call($method, $params, $data)->get());
-        //         } elseif (is_array($request[$input])) {
-        //             $request[$input] = $this->handleMethodCallsOnArrayInput($request[$input], $method, $params);
-        //         } else {
-        //             $request[$input] = Formatter::call($method, $params, $request[$input])->get();
-        //         }
-        //     }
-        // }
-
-        // return $request;
-    }
-    /**
-     * Process the formatters and convert the input
-     * @param array $request
-     * @param array $explicitKeys
-     * @param array $pattern
-     * @param array $request
-     */
-    public function process($request, $explicitKeys, $patterns)
-    {
-        $request = $this->convertExplicitKeys($request, $explicitKeys);
-
-        $request = $this->convertPatternInput($request, $patterns);
-
-        return $request;
+        return [(trim($formatter)), $parameters];
     }
     /**
      * Determine if the given value needs to be
@@ -155,88 +157,77 @@ class FormatterProcessor
      * @param  mixed $value
      * @return bool
      */
-    protected function bailIfEmpty($value)
+    protected function bailIfEmpty($method, $value)
     {
-        if (is_array($value) && empty($value)) {
-            return true;
+        if (is_string($method) && $method == 'bailIfEmpty') {
+            if ($value instanceof Collection && $value->isEmpty()) {
+                return true;
+            }
+            if (is_array($value) && empty($value)) {
+                return true;
+            }
+            if (is_null($value) || $value == '') {
+                return true;
+            }
+        } elseif ($method instanceof CheckForEmpty) {
+            return $method->isEmpty($value, $this->data);
         }
-        if (is_null($value) || $value == '') {
-            return true;
-        }
+
 
         return false;
     }
     /**
-    * Convert pattern input keys
-    * @param  array $request
-    * @param  array $formatters
-    * @return array $request
-    */
-    private function convertPatternInput($request, $formatters)
+      * Convert explicit attributes
+      * @return $this
+      */
+    protected function convertExplicitAttributes()
     {
-        foreach ($formatters as $input => $methods) {
-            $matches = array_filter($request, function ($key) use ($input) {
-                return Str::is($input, $key);
-            }, ARRAY_FILTER_USE_KEY);
+        $explicitAttributes = collect($this->explicitAttributes);
 
-
-            foreach ($matches as $inputKey => $inputValue) {
-                $formatters = explode('|', trim($methods, "|"));
-
-                foreach ($formatters as $method) {
-                    $details = $this->extractIterationDetails($method);
-
-                    $params = $details['params'];
-
-                    $method = $details['method'];
-
-                    if ($method== 'bailIfEmpty' && $this->bailIfEmpty($request[$inputKey])) {
-                        break;
-                    } elseif ($method== 'bailIfEmpty') {
-                        continue;
-                    }
-
-                    if (is_array($request[$inputKey])) {
-                        $request[$inputKey] = $this->handleMethodCallsOnArrayInput($request[$inputKey], $method, $params);
-                    } else {
-                        //always return the value not the class
-                        $request[$inputKey] = Formatter::call($method, $params, $request[$inputKey])->get();
-                    }
+        $explicitAttributes->each(function ($methods, $attribute) {
+            $methods = collect($this->explodeMethodsToCall($methods));
+            $methods->each(function ($method) use ($attribute) {
+                //bail out as needed or told
+                $bail = $this->bailIfEmpty($method, data_get($this->data, $attribute));
+                if ($bail) {
+                    return false;
+                } elseif (!$bail) {
+                    $this->callMethodOnAttribute($attribute, $method);
                 }
-            }
-        }
+            });
+        });
 
-        return $request;
+        return $this;
     }
 
-    /**
-     * Get the necessary details about the current
-     * formatter iteration in our convert methods
-     * @param  mixed $iteration
-     * @return array
-     */
-    private function extractIterationDetails($iteration)
-    {
-        return [
-            'params'=>strpos($iteration, ":") ? explode(",", Str::after($iteration, ":")) : [],
-            'method'=>Str::before($iteration, ":")
-        ];
-    }
 
     /**
-    * Explode the explicit formatter into an array if necessary.
-    *
-    * @param  mixed  $formatter
-    * @return array
+    * Convert wildcard attributes
+    * @return $this
     */
-    protected function explodeFormatter($formatter)
+    protected function convertWildCardAttributes()
     {
-        if (is_string($formatter)) {
-            return explode('|', $formatter);
-        } elseif (is_object($formatter)) {
-            return [$this->getConvertibleObjectValue($formatter)];
-        }
+        $wildCardAttributes = collect($this->wildCardAttributes);
 
-        // return array_map([$this, 'getConvertibleObjectValue'], $formatter);
+        $wildCardAttributes->each(function ($methods, $attribute) {
+            //determine attributes that match patterns
+            $matches = collect($this->data)->filter(function ($value, $key) use ($attribute) {
+                return Str::is($attribute, $key);
+            })->keys()->each(function ($attr) use ($methods) {
+                //then iterate through the attributes and process formatters
+                $methods = collect($this->explodeMethodsToCall($methods))->each(function ($method) use ($attr) {
+                    //bail out as needed or told
+                    $bail = $this->bailIfEmpty($method, data_get($this->data, $attr));
+
+                    if ($bail) {
+                        return false;
+                    } elseif (!$bail) {
+                        $this->callMethodOnAttribute($attr, $method);
+                    }
+                });
+            });
+        });
+
+        return $this;
     }
 }

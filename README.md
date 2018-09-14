@@ -45,7 +45,7 @@ new Formatter('yourValue');
 Formatter::create("yourValue");
 
 //or use the binded 'collab-corp.formatter' instance with our helper
-formatter('yourValue')->onlyNumbers()->get();
+formatter('yourValue');
 
 ```
 
@@ -130,52 +130,8 @@ $values = (new Formatter(['123something', ["foo123","bar456",'baz678']]))->onlyN
 
 //returns ['123', ['123','456','678']]
 
-```
-### Ignore empty strings/null or empty arrays
-
-By default, when you  call formatter methods on a value, the class will run regardless of value. In some cases however, you may not want formatter to run conversions on an input that is an empty string, null or an empty array. Consider the following scenario:
-
-You have a form to allow your users to update their email,username and password. The password field may be nullable and you will only update it if its not null or empty. You may have set up a converter to automatically convert the password to a hashed string
-
-
-```php
-
-
-$this->convert($request, [
-    'password'=>"bcrypt",
-]);
-```
-
-However, this will run `bcrypt` on the value even if its an empty string, resulting in a password getting set to a hashed value of an empty string, which can be a huge security risk. In these cases, you can toggle the formatter to ignore empty strings,null and empty arrays:
-
-```php
-Formatter::ignoreIfValueIsEmpty(true)
-
-$this->convert($request, [
-    'password'=>"bcrypt",
-]);
-
-$pw = $request->password;
-
-//will only be bcrypted if the request value was not an empty string or null value.
-dd($pw);
-
-//turn off
-Formatter::ignoreIfValueIsEmpty(false);
-
-//other formatter calls whos values can be empty
-```
-
-You may also specify for a certain input to be skipped if the value is empty in mass conversions:
-
-```php
-$this->convert($request, [
-   '*password*'=>"bailIfEmpty|bcrypt",
-]);
-
 
 ```
-In this case `bailIfEmpty` will be executed and password will not be hashed if it's empty string or null. The conversion will simply move on to the next request input key.
 
 
 ## Mass Conversions
@@ -213,12 +169,65 @@ Another useful and probably the best reason for use of this package is processin
 
 
 ```
-Very similiar to laravel validation right? When defining the formatters,use the name of the input in the request as the key and the value being the formatter(s) you want to run on that input. Just like laravel rules, seperate each method with a pipe character `|`.
-If the formatter method you want to call needs parameters then specify parameter input with a colon `:` then pass the parameters in a comma delimited list in the order that the method accepts them, refer to the methods  section to see what <a href="#methods">methods</a> require/accept parameters.
+Very similiar to laravel validation right?
 
-`ex: add:2,2`
 
-You could also define a method on your models and pass in `$this->attributes`  vs defining a mutator for each attribute.
+### Mass Conversion Closure/Objects
+
+For custom conversion of input, you may use closures and class objects that implement `CollabCorp\Formatter\Contracts\Convertible` :
+
+
+
+
+
+```php
+$formatters=[
+
+    'some_input'=>[new SomeConvertingClass, 'slug'],
+    'something_else'=>function($value, $data){
+
+       //change value
+       return $value;
+    },
+
+
+];
+
+
+$convertedInput = Formatter::convert($request->all(),$formatters);
+
+
+```
+
+That class must implement `convert`:
+
+
+```php
+
+<?php
+
+namespace App\Converters;
+use CollabCorp\Formatter\Contracts\Convertible;
+
+class SomeConverttingClass implements Convertible
+{
+
+    /**
+     * Convert the given value as needed.
+     * @param  mixed  $value The value being converted
+     * @param  array $data The data being processed
+     * @return mixed
+     */
+    public function convert($value, $data)
+    {
+        $value = 'change value';
+
+        return $value;
+    }
+}
+
+
+```
 
 
 ## ConvertsInput Trait
@@ -285,6 +294,97 @@ You may also reuse this trait outside of controller for your models or collectio
 
 
 
+
+
+### Ignore empty strings/null or empty arrays
+
+By default, when you  call formatter methods on a value, the class will run regardless of value. In some cases however, you may not want formatter to run conversions on an input that is an empty string, null or an empty array. Consider the following scenario:
+
+You have a form to allow your users to update their email,username and password. The password field may be nullable and you will only update it if its not null or empty. You may have set up a converter to automatically convert the password to a hashed string
+
+
+```php
+
+//ex scenario: conversions before validation
+$this->convert($request, [
+    'password'=>"bcrypt",
+]);
+```
+
+However, this will run `bcrypt` on the value even if its an empty string, resulting in a password getting set to a hashed value of an empty string, which can be a risk to updating a user password accidently. In these cases, you can toggle the formatter to ignore empty strings,null and empty arrays:
+
+```php
+Formatter::ignoreIfValueIsEmpty(true)
+
+$this->convert($request, [
+    'password'=>"bcrypt",
+]);
+
+$pw = $request->password;
+
+//will only be bcrypted if the request value was not an empty string or null value.
+dd($pw);
+
+//turn off
+Formatter::ignoreIfValueIsEmpty(false);
+
+//other formatter calls whos values can be empty
+```
+
+
+
+You may also specify for a certain input to be skipped if the value is empty in mass conversions:
+
+```php
+$this->convert($request, [
+   '*password*'=>"bailIfEmpty|bcrypt",
+]);
+
+
+```
+In this case `bailIfEmpty` will be executed and password will not be hashed if it's empty string or null. The conversion will simply move on to the next request input key.
+
+### Custom Empty
+
+Of course with more complex values or maybe specific logic, you may have custom checks for determining what considers
+a value "empty". You can you classes to do this:
+
+```php
+
+$this->convert($request, [
+   'some_input'=>[new MeetsRequirements, 'bcrypt'],
+]);
+
+```
+
+Simply have this class implement `CollabCorp\Formatter\Contracts\CheckForEmpty` interface:
+
+
+```php
+<?php
+
+namespace App\EmptyChecks;
+
+use CollabCorp\Formatter\Contracts\CheckForEmpty;
+
+class MeetsRequirements implements CheckForEmpty
+{
+    /**
+     * Check if the given value is "empty"
+     * @param  mixed  $value The value being checked
+     * @param  array  $data The array data being processed
+     * @return boolean
+     */
+    public function isEmpty($value, $data):bool
+    {
+        //logic
+
+        //return true|false
+    }
+}
+
+
+```
 
 
 # Methods are whitelisted

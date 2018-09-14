@@ -170,9 +170,6 @@ class Formatter
      */
     public function __toString()
     {
-        if ($this->value instanceof Collection || is_array($this->value)) {
-            throw FormatterException::stringCastOnMultipleValues();
-        }
         return (string) $this->get();
     }
 
@@ -345,17 +342,14 @@ class Formatter
             $request = $request->toArray();
         }
 
-        $explictKeys = array_filter($formatters, function ($key) use ($request) {
+        $explictAttributes = array_filter($formatters, function ($key) use ($request) {
             return array_key_exists($key, $request) || !is_null(data_get($request, $key));
         }, ARRAY_FILTER_USE_KEY);
 
-        $patterns = array_filter($formatters, function ($key) use ($request) {
+        $wildCards = array_filter($formatters, function ($key) use ($request) {
             return  !array_key_exists($key, $request) && is_null(data_get($request, $key));
         }, ARRAY_FILTER_USE_KEY);
 
-
-        $request = (new FormatterProcessor($request, $explictKeys, $patterns))->get();
-
-        return collect($request);
+        return collect((new FormatterProcessor($request, $explictAttributes, $wildCards))->get());
     }
 }

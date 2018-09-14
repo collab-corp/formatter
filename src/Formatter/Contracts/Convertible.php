@@ -9,8 +9,8 @@ interface Convertible
     /**
      * Convert the given value as needed.
      * @param  mixed  $value
-     * @param  Illuminate\Http\Request $request
+     * @param  array $data
      * @return mixed
      */
-    public function convert($value, Request $request);
+    public function convert($value, $data);
 }
