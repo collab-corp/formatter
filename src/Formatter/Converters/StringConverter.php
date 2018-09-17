@@ -86,7 +86,7 @@ class StringConverter extends Formatter
      */
     public function ssn()
     {
-        if (mb_strlen($this->value) == '9') {
+        if (mb_strlen($this->value) == '9' && is_numeric($this->value)) {
             $this->value = substr($this->value, 0, 3).'-'.substr($this->value, 3, 2).'-'.substr($this->value, 5, mb_strlen($this->value));
         }
         return $this;
@@ -264,9 +264,9 @@ class StringConverter extends Formatter
      */
     public function phone()
     {
-        if (mb_strlen($this->value) == '11') {
+        if (mb_strlen($this->value) == '11' && is_numeric($this->value)) {
             $this->value = substr($this->value, 0, 1).'('.substr($this->value, 1, 3).')'.substr($this->value, 4, 3).'-'.substr($this->value, 7);
-        } elseif (mb_strlen($this->value) == '10') {
+        } elseif (mb_strlen($this->value) == '10' && is_numeric($this->value)) {
             $this->value = '('.substr($this->value, 0, 3).')'.substr($this->value, 3, 3).'-'.substr($this->value, 6);
         }
         return $this;
