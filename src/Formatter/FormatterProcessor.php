@@ -67,7 +67,7 @@ class FormatterProcessor
     *
     * @param  string attribute
     * @param  mixed  $formatter
-    * @return mixed
+    * @return $this
     */
     protected function callMethodOnAttribute($attribute, $formatter)
     {
@@ -85,7 +85,7 @@ class FormatterProcessor
 
             $this->processMethodCall($attribute, $details, $input);
         }
-        // return  $formatter;
+        return $this;
     }
 
     /**
@@ -111,6 +111,8 @@ class FormatterProcessor
         if ($isCollection) {
             $this->data[$attribute] =collect($this->data[$attribute]);
         }
+
+        return $this;
     }
 
     /**
@@ -129,6 +131,7 @@ class FormatterProcessor
         } else {
             $this->data[$attribute] = Formatter::call($details[0], $details[1], $this->data[$attribute])->get();
         }
+        return $this;
     }
 
     /**
