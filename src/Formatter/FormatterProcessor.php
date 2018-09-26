@@ -67,7 +67,7 @@ class FormatterProcessor
     *
     * @param  string attribute
     * @param  mixed  $formatter
-    * @return $this
+    * @return mixed
     */
     protected function callMethodOnAttribute($attribute, $formatter)
     {
@@ -85,7 +85,7 @@ class FormatterProcessor
 
             $this->processMethodCall($attribute, $details, $input);
         }
-        return $this;
+        // return  $formatter;
     }
 
     /**
@@ -111,8 +111,6 @@ class FormatterProcessor
         if ($isCollection) {
             $this->data[$attribute] =collect($this->data[$attribute]);
         }
-
-        return $this;
     }
 
     /**
@@ -131,7 +129,6 @@ class FormatterProcessor
         } else {
             $this->data[$attribute] = Formatter::call($details[0], $details[1], $this->data[$attribute])->get();
         }
-        return $this;
     }
 
     /**
@@ -192,9 +189,10 @@ class FormatterProcessor
             $methods->each(function ($method) use ($attribute) {
                 //bail out as needed or told
                 $bail = $this->bailIfEmpty($method, data_get($this->data, $attribute));
+
                 if ($bail) {
                     return false;
-                } elseif (!$bail) {
+                } elseif (!$bail && $method !='bailIfEmpty') {
                     $this->callMethodOnAttribute($attribute, $method);
                 }
             });
@@ -224,7 +222,7 @@ class FormatterProcessor
 
                     if ($bail) {
                         return false;
-                    } elseif (!$bail) {
+                    } elseif (!$bail && $method !='bailIfEmpty') {
                         $this->callMethodOnAttribute($attr, $method);
                     }
                 });
