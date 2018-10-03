@@ -142,7 +142,7 @@ class Formatter
     /**
      * Construct a new instance
      * @param mixed $value
-     * @return CollabCorp\Formatter\Formatter
+     * @return static
      */
     public function __construct($value = '')
     {
@@ -154,7 +154,7 @@ class Formatter
     /**
      * Reset the value to null.
      *
-     * @return $this
+     * @return static
      */
     public function clear()
     {

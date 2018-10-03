@@ -25,7 +25,7 @@ class MathConverter extends Formatter
     /**
      * Make our value be a decimal of specified places
      * @param  $numberOfPlaces
-     * @return this
+     * @return static
      */
     public function decimals($numberOfPlaces = 2)
     {
@@ -36,7 +36,7 @@ class MathConverter extends Formatter
     /**
      * Add a number to the numeric value
      * @param mixed $number
-     * @return this
+     * @return static
      */
     public function add($number)
     {
@@ -51,7 +51,7 @@ class MathConverter extends Formatter
     /**
      * Subtract a number from the our value
      * @param mixed $number
-     * @return this
+     * @return static
      */
     public function subtract($number)
     {
@@ -68,7 +68,7 @@ class MathConverter extends Formatter
     /**
      * Multiply our value by the given number
      * @param mixed $number
-     * @return this
+     * @return static
      */
     public function multiply($number)
     {
@@ -83,7 +83,7 @@ class MathConverter extends Formatter
     /**
      * Raise our value the given power number
      * @param mixed $number
-     * @return this
+     * @return static
      */
     public function power($number)
     {
@@ -98,7 +98,7 @@ class MathConverter extends Formatter
     /**
      * Multiply the value by the given the numeric value
      * @param mixed $number
-     * @return this
+     * @return static
      */
     public function divide($number)
     {
@@ -112,7 +112,7 @@ class MathConverter extends Formatter
 
     /**
      * Convert our number to a percentage
-     * @return this
+     * @return static
      */
     public function percentage()
     {

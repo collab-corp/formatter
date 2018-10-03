@@ -35,6 +35,19 @@ class StringConverterTest extends TestCase
         $this->formatter->setValue('true');
 
         $this->assertEquals(true, $this->formatter->toBool()->get());
+
+        $this->formatter->setValue(null);
+
+        $this->assertEquals(false, $this->formatter->toBool()->get());
+    }
+    /**
+     * @test
+     */
+    public function singleSpaceBetweenWordsMethod()
+    {
+        $this->formatter->setValue('Some sentence    with     lots   of spces between    words');
+
+        $this->assertEquals('Some sentence with lots of spces between words', $this->formatter->singleSpaceBetweenWords()->get());
     }
     /**
      * @test

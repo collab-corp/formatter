@@ -44,7 +44,7 @@ new Formatter('yourValue');
 //or you could use static create method
 Formatter::create("yourValue");
 
-//or use the binded 'collab-corp.formatter' instance with our helper
+//or us formatter helper
 formatter('yourValue');
 
 ```
@@ -481,6 +481,9 @@ $upper= (new Formatter("World"))->hello()->get(); // "Hello World"
         <a href="#studlycase">studlyCase</a>
     </li>
     <li>
+        <a href="#singlespacebetweenwords">singleSpaceBetweenWords</a>
+    </li>
+    <li>
         <a href="#slug">slug</a>
     </li>
     <li>
@@ -708,6 +711,12 @@ Note: These simply are methods called using the Carbon Library. These are the on
     ```php
     //'FooBar'
     Formatter::create('foo bar')->studlyCase()->get();
+    ```
+  * ### singleSpaceBetweenWords
+    Trim all white space between words to a single space:
+    ```php
+    //'A sentence with lots of space between words'
+    Formatter::create('A sentence     with   lots of   space   between words')->singleSpaceBetweenWords()->get();
     ```
   * ### slug
     convert value to a slug friendly string:

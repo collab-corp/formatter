@@ -4,16 +4,12 @@ use CollabCorp\Formatter\Formatter;
 
 if (!function_exists('formatter')) {
     /**
-     * Return a formatter instance via
-     * key binding and set the given value.
-     * @param  string $value
-     * @return $value|CollabCorp\Formatter\Formatter
+     * Return a formatter instance
+     * @param  string|null $value
+     * @return CollabCorp\Formatter\Formatter
      * */
-    function formatter($value='')
+    function formatter($value=null)
     {
-        if (!app()->bound('collab-corp.formatter')) {
-            return new Formatter($value);
-        }
-        return app('collab-corp.formatter')->setValue($value);
+        return new Formatter($value);
     }
 }

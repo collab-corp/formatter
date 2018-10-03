@@ -19,7 +19,7 @@ class FormatterProcessor
     * @param array $input
     * @param array $explicitAttributes
     * @param array $wildCardAttributes
-    * @return $this
+    * @return static
     */
     public function __construct(array $input, array $explicitAttributes, array $wildCardAttributes)
     {
@@ -94,7 +94,7 @@ class FormatterProcessor
      * @param  string $attribute
      * @param  array  $details
      * @param  mixed  $input
-     * @return $this
+     * @return static
      */
     protected function processMethodCallOnArrayInput($attribute, array $details, $input)
     {
@@ -118,7 +118,7 @@ class FormatterProcessor
      * @param  string $attribute
      * @param  array  $details
      * @param  mixed  $input
-     * @return $this
+     * @return static
      */
     protected function processMethodCall($attribute, array $details, $input)
     {
@@ -178,7 +178,7 @@ class FormatterProcessor
     }
     /**
       * Convert explicit attributes
-      * @return $this
+      * @return static
       */
     protected function convertExplicitAttributes()
     {
@@ -204,7 +204,7 @@ class FormatterProcessor
 
     /**
     * Convert wildcard attributes
-    * @return $this
+    * @return static
     */
     protected function convertWildCardAttributes()
     {
