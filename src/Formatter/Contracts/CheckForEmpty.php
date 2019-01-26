@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 interface CheckForEmpty
 {
     /**
-     * Check if the given value is "empty"
+     * Check if the given value is "empty".
      * @param  mixed  $value
      * @param  array  $data
      * @return boolean

@@ -15,7 +15,7 @@ class FormatterProcessor
     use ProcessesMethodCallsOnArrays;
 
     /**
-    * Construct a new formatter processor instance
+    * Construct a new formatter processor instance.
     * @param array $input
     * @param array $explicitAttributes
     * @param array $wildCardAttributes
@@ -39,7 +39,7 @@ class FormatterProcessor
     }
 
     /**
-     * Get the processed data
+     * Get the processed data.
      * @return array
      */
     public function get()
@@ -114,7 +114,7 @@ class FormatterProcessor
     }
 
     /**
-     * Process method call on simple values
+     * Process method call on simple values.
      * @param  string $attribute
      * @param  array  $details
      * @param  mixed  $input
@@ -133,7 +133,7 @@ class FormatterProcessor
 
     /**
      * Extract the method/parameters
-     * from a string based formatter
+     * from a string based formatter.
      * @param  string  $formatters
      * @return array
      * @see  Illuminate\Validation\ValidationRuleParser@parseStringRule

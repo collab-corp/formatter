@@ -10,10 +10,9 @@ class DateConverter extends Formatter
 {
     /**
     * Whitelist of the allowed methods to be called on this class.
-    * @var Array $whiteList
+    * @var array
     */
     protected $whiteList =[
-        //Date methods
         'toCarbon',
         'setTimezone',
         'format',
@@ -34,7 +33,7 @@ class DateConverter extends Formatter
     ];
     /**
      * Convert our carbon instance to a date format
-     * @param String $dateFormat
+     * @param string
      * @return static
      */
     public function format($dateFormat)
@@ -47,7 +46,7 @@ class DateConverter extends Formatter
 
     /**
      * Convert our value to a carbon instance
-     * @return  this
+     * @return static
      */
     public function toCarbon()
     {
@@ -58,7 +57,7 @@ class DateConverter extends Formatter
 
     /**
     * Set a timezone on our carbon instance
-    * @return  this
+    * @return static
     */
     public function setTimezone($tz)
     {

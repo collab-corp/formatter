@@ -9,10 +9,9 @@ class StringConverter extends Formatter
 {
     /**
     * Whitelist of the allowed methods to be called on this class.
-    * @var Array $whiteList
+    * @var array
     */
     protected $whiteList =[
-        //String methods
         'after',
         'bcrypt',
         'before',

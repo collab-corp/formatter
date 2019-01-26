@@ -19,12 +19,12 @@ class Formatter
         __call as macroCall;
     }
     /**
-    * Whitelist of the allowed methods to be called
+    * Whitelist of the allowed methods to be called.
     * @var array
     */
     protected $whiteList =[];
     /**
-     * The value that is being formatted
+     * The value that is being formatted.
      * @var mixed $value
      */
     protected $value;
@@ -36,7 +36,7 @@ class Formatter
     protected static $manager;
 
     /**
-     * Only run formatter methods if values are not null || empty string
+     * Only run formatter methods if values are not null || empty string.
      * @var boolean
      */
     protected static $ignoreIfValueIsEmpty = false;
@@ -44,7 +44,7 @@ class Formatter
 
     /**
      * Only run formatter methods if the given value
-     * is not an 'empty' value (empty string|null|empty array)
+     * is not an 'empty' value (empty string|null|empty array).
      * @param  bool $run
      * @return void
      */
@@ -57,7 +57,7 @@ class Formatter
      *
      * @param  String $method
      * @param  array $args
-     * @return CollabCorp\Formatter\Formatter
+     * @return static
      */
     public function __call($method, $args = [])
     {
@@ -192,7 +192,7 @@ class Formatter
     }
     /**
     * Get the first value from the instance
-    * if the value is a collection instance
+    * if the value is a collection instance.
     * @return mixed $value
     */
     public function all()
@@ -205,7 +205,7 @@ class Formatter
     /**
     * Get the first value from the instance
     * if the value is a collection instance or array
-    * or just return the underlying simple value
+    * or just return the underlying simple value.
     * @return mixed $value
     */
     public function first()
@@ -220,7 +220,7 @@ class Formatter
     /**
     * Get the last value from the instance
     * if the value is a collection instance or array
-    * or just return the underlying simple value
+    * or just return the underlying simple value.
     * @return mixed $value
     */
     public function last()
@@ -234,9 +234,9 @@ class Formatter
     }
 
     /**
-     * Create a new instance via static method
+     * Create a new instance via static method.
      * @param  mixed $value
-     * @return CollabCorp\Formatter\Convert
+     * @return static
      */
     public static function create($value)
     {
@@ -246,7 +246,7 @@ class Formatter
     /**
      * Set the value
      * @param mixed $value
-     * @return CollabCorp\Formatter\Formatter
+     * @return static
      */
     public function setValue($value)
     {
@@ -269,7 +269,7 @@ class Formatter
         return $this;
     }
     /**
-     * Determine if the method is allowed to be called
+     * Determine if the method is allowed to be called.
      *
      * @param  String $method
      * @return boolean
@@ -295,7 +295,7 @@ class Formatter
         return static::$manager = new ConverterManager(app());
     }
     /**
-    * Call the formatter as a function
+    * Call the formatter as a function.
     *
     * @param  mixed $value
     * @return mixed
@@ -314,10 +314,10 @@ class Formatter
 
 
     /**
-     * Get a Converter instance that implements given method
+     * Get a Converter instance that implements given method.
      *
      * @param  string $method
-     * @return CollabCorp\Formatter\Formatter
+     * @return static
      */
     protected static function implementing($method)
     {
@@ -329,7 +329,7 @@ class Formatter
     }
 
     /**
-    * Convert the input according to the formatters
+    * Convert the input according to the formatters.
     * @param  array $formatters
     * @param  array|mixed $request
     * @return Illuminate\Support\Collection
