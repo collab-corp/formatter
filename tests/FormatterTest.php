@@ -8,7 +8,6 @@ use CollabCorp\Formatter\Tests\TestCase;
 use CollabCorp\Formatter\Tests\TesterFormatClass;
 use CollabCorp\Formatter\Tests\InvalidTesterFormatClass;
 
-
 class FormatterTest extends TestCase
 {
     public function setUp()
