@@ -112,18 +112,14 @@ class FormatterRuleParser extends ValidationRuleParser
         $parameters = $options['parameters'];
 
         if (is_callable($method)) {
-
-            if(is_string($method) && !static::isWhiteListed($method)){
+            if (is_string($method) && !static::isWhiteListed($method)) {
                 static::throwInvalidFormatterRule($method);
             }
 
             return $method(...$parameters);
-
         } elseif (static::methodIsCallableOnValue($value, $method)) {
-
             return $value->{$method}(...$parameters);
         }
-
     }
     /**
      * Throw an invalid argument exception using the
