@@ -1,6 +1,6 @@
 <?php
 
-namespace CollabCorp\LaravelInputFormatter\Tests;
+namespace CollabCorp\Formatter\Tests;
 
 use CollabCorp\Formatter\Contracts\Formattable;
 
@@ -12,6 +12,6 @@ class TesterFormatClass implements Formattable{
      */
     public function format($value)
     {
-        return $value + 4;
+        return $value."@@@@@hhhhh";
     }
 }

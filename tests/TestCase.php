@@ -1,6 +1,6 @@
 <?php
 
-namespace CollabCorp\LaravelInputFormatter\Tests;
+namespace CollabCorp\Formatter\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
