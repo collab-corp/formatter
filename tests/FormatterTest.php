@@ -18,7 +18,7 @@ class FormatterTest extends TestCase
             'ucfirst',
             'ucwords',
             'preg_replace',
-            'carbon'
+            'to_carbon'
         ]);
 
 
@@ -49,7 +49,7 @@ class FormatterTest extends TestCase
             'first_name'=>'trim',
             'last_name'=>'trim|ucfirst',
             'phone_number'=>'trim|preg_replace:/[^0-9]/,,$value',
-            'date_of_birth'=>'carbon|format:m/d/Y',
+            'date_of_birth'=>'to_carbon|format:m/d/Y',
             'favorite_numbers'=>'preg_replace:/[^0-9]/,,$value',
             'contact_info.address_one'=>'trim:$|ucwords',
             'contact_info.*number'=>'preg_replace:/[^0-9]/,,$value',

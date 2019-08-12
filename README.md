@@ -37,7 +37,7 @@ FormattedData::registerCallableWhiteList([
     'ucwords',
     'preg_replace',
     'json_encode',
-    'carbon', // autoloaded helper function that just returns a Carbon instance
+    'to_carbon', // autoloaded helper function that just returns a Carbon instance
 ]);
 
 ```
@@ -88,7 +88,7 @@ $rules = [
     'first_name'=>'trim',
     'last_name'=>'trim|ucfirst',
     'phone_number'=>'trim|preg_replace:/[^0-9]/,,$value', // see extra section to learn what "$value" is
-    'date_of_birth'=>'carbon|format:m/d/Y', // see extra section on delegating function calls to underlying objects
+    'date_of_birth'=>'to_carbon|format:m/d/Y', // see extra section on delegating function calls to underlying objects
     'favorite_numbers'=>'preg_replace:/[^0-9]/,,$value',
     'contact_info.address_one'=>'trim:$|ucwords',
     'contact_info.*number'=>'preg_replace:/[^0-9]/,,$value',
@@ -220,26 +220,26 @@ If your value(s) at any point becomes an object, you may specify method's that e
 
 ```php
 
-'date_of_birth'=>'carbon|format:m/d/Y',
+'date_of_birth'=>'to_carbon|format:m/d/Y',
 
 ```
 
-Again, `carbon` is just our autoloaded helper function that returns a carbon instance:
+Again, `to_carbon` is just our autoloaded helper function that returns a Carbon instance:
 
 ```php
-function carbon($date)
+function to_carbon($date)
 {
     return \Carbon\Carbon($date);
 }
 
 ```
-When the parsing class calls `carbon`, our value is now an instance of `Carbon`, from there we can call any carbon method we want, in our example we called `format` next. `format` is a method that exists on the carbon instance.
+When the parsing class calls `to_carbon`, our value is now an instance of `Carbon`, from there we can call any Carbon method we want, in our example we called `format` next. `format` is a method that exists on the Carbon instance.
 
 <strong>
   Note:
 </strong>
+This makes it convenient to utilize other class methods, however using this method of formatting may make it easier to introduce bugs.
 
-This makes it a little convenient to utilize other class methods, however using this method of formatting is free game and validating anything that may occur there is lost.
 
 ##### Trait:
 
