@@ -2,15 +2,12 @@
 
 namespace CollabCorp\Formatter\Tests;
 
-use Carbon\Carbon;
+use InvalidArgumentException;
 use CollabCorp\Formatter\FormattedData;
 use CollabCorp\Formatter\Tests\TestCase;
 use CollabCorp\Formatter\Tests\TesterFormatClass;
+use CollabCorp\Formatter\Tests\InvalidTesterFormatClass;
 
-function carbon($date)
-{
-    return new Carbon($date);
-}
 
 class FormatterTest extends TestCase
 {
@@ -31,13 +28,21 @@ class FormatterTest extends TestCase
             'last_name'=>'   thompson',
             'phone_number'=>'    1234567890SomeLetters    ',
             'date_of_birth'=>'1989-05-20',
+            'favorite_numbers'=>[
+                "1SomeCharactersForTesting",
+                "2SomeCharactersForTesting",
+                "3SomeCharactersForTesting"
+            ],
             'contact_info'=>[
                 'address_one'=>'$$$$$$$$123 some lane st$$$$$$$$$',
                 'address_two'=>'   ....321 some other lane st.......',
                 'apartment_number'=>'klsadfjaklsd12',
                 'email_one'=>'email@example.com',
-                'email_two'=>'mail@example.com'
-            ]
+                'email_two'=>'mail@example.com',
+                'po_box'=>'1245'
+            ],
+            'extra'=> null,
+            'more_data'=> '     something',
 
         ];
 
@@ -45,13 +50,16 @@ class FormatterTest extends TestCase
             'first_name'=>'trim',
             'last_name'=>'trim|ucfirst',
             'phone_number'=>'trim|preg_replace:/[^0-9]/,,$value',
-            'date_of_birth'=>'carbon|isoFormat:m/d/Y',
+            'date_of_birth'=>'carbon|format:m/d/Y',
+            'favorite_numbers'=>'preg_replace:/[^0-9]/,,$value',
             'contact_info.address_one'=>'trim:$|ucwords',
             'contact_info.*number'=>'preg_replace:/[^0-9]/,,$value',
+            'contact_info.*email*'=>[new TesterFormatClass],
             'contact_info.address_two'=>['trim','trim:.',function ($address) {
                 return 'Address prefix added via closure to the address: '.$address;
             }],
-            'contact_info.*email*'=>[new TesterFormatClass]
+            'extra'=>'bailIfEmpty|trim|ucfirst',
+            'more_data'=>'bailIfEmpty|trim|ucfirst',
         ];
 
         $this->formatter = new FormattedData($this->data, $this->rules);
@@ -63,9 +71,17 @@ class FormatterTest extends TestCase
         // clear the whitelist
         FormattedData::registerCallableWhiteList([]);
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $formattedData = $this->formatter->get();
+    }
+
+    /** @test */
+    public function it_applies_formatting_rules_on_array_values()
+    {
+        $formattedData = $this->formatter->get();
+
+        $this->assertEquals(["1", "2", "3"], $formattedData['favorite_numbers']);
     }
 
     /** @test */
@@ -125,6 +141,30 @@ class FormatterTest extends TestCase
             '05/20/1989',
             $formattedData['date_of_birth']
         );
+    }
 
+    /** @test */
+    public function it_bails_on_empty_input_if_specified()
+    {
+        $formattedData = $this->formatter->get();
+
+        $this->assertEquals(null, $formattedData['extra']);
+    }
+
+    /** @test */
+    public function it_continues_formatting_if_bail_method_is_provided_and_input_is_not_empty()
+    {
+        $formattedData = $this->formatter->get();
+
+        $this->assertEquals('Something', $formattedData['more_data']);
+    }
+    /** @test */
+    public function it_throws_exception_on_invalid_objects()
+    {
+        $this->rules['contact_info.po_box'] = [new InvalidTesterFormatClass];
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $formattedData = (new FormattedData($this->data, $this->rules))->get();
     }
 }

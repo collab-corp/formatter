@@ -26,11 +26,17 @@ class FormatterRuleParser extends ValidationRuleParser
     */
     protected function prepareRule($rule)
     {
-        if ($rule instanceof Formattable || $rule instanceof Closure) {
+        if (is_string($rule) || $rule instanceof Formattable || $rule instanceof Closure) {
             return $rule;
         }
 
-        return (string) $rule;
+        try {
+            return (string) $rule;
+        } catch (\Exception $e) {
+            throw new InvalidArgumentException(
+                'Invalid rule type encountered. Rule must be Closure, String or Formattable object.'
+            );
+        }
     }
 
     /**
@@ -63,7 +69,9 @@ class FormatterRuleParser extends ValidationRuleParser
                 array_unshift($options['parameters'], $value);
             }
 
-            Arr::set($data, $key, static::applyRule($options, $value));
+            $newValue = static::applyRule($options, $value);
+
+            Arr::set($data, $key, $newValue);
         }
 
         return $data;
@@ -112,18 +120,16 @@ class FormatterRuleParser extends ValidationRuleParser
         $parameters = $options['parameters'];
 
         if (is_callable($method)) {
-
-            if(is_string($method) && !static::isWhiteListed($method)){
+            if (is_string($method) && !static::isWhiteListed($method)) {
                 static::throwInvalidFormatterRule($method);
             }
-
             return $method(...$parameters);
-
         } elseif (static::methodIsCallableOnValue($value, $method)) {
-
             return $value->{$method}(...$parameters);
         }
 
+
+        static::throwInvalidFormatterRule($method);
     }
     /**
      * Throw an invalid argument exception using the
@@ -133,9 +139,13 @@ class FormatterRuleParser extends ValidationRuleParser
      */
     protected static function throwInvalidFormatterRule($method)
     {
-        throw new InvalidArgumentException(
-            sprintf("Non callable rule encountered, [%s].", $method)
-        );
+        if (is_array($method)) {
+            $error = 'Invalid callable rule encountered.';
+        } else {
+            $error = sprintf("Non callable rule encountered, [%s].", $method);
+        }
+
+        throw new InvalidArgumentException($error);
     }
     /**
      * Check if the given value is empty.

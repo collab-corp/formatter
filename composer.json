@@ -25,7 +25,10 @@
     "autoload-dev": {
         "psr-4": {
             "CollabCorp\\Formatter\\Tests\\": "tests/"
-        }
+        },
+        "files": [
+            "./tests/helpers.php"
+        ]
     },
     "scripts": {
         "test": "vendor/bin/phpunit"
