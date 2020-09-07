@@ -1,8 +1,8 @@
 <?php
 
-namespace CollabCorp\Formatter\Concerns;
+namespace CollabCorp\Formatter\Support\Concerns;
 
-use CollabCorp\Formatter\FormattedData;
+use CollabCorp\Formatter\DataFormatter;
 
 trait FormatsData
 {
@@ -15,6 +15,6 @@ trait FormatsData
      */
     public function format(array $data, array $rules)
     {
-        return (new FormattedData($data, $rules))->get();
+        return (new DataFormatter($data, $rules))->get();
     }
 }

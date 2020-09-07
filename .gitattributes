@@ -1,3 +1,6 @@
 /phpunit.xml export-ignore
 /tests export-ignore
+index.php export-ignore
 .travis.yml export-ignore
+.package.json export-ignore
+.package-lock.json export-ignore

@@ -1,6 +1,6 @@
 <?php
 
-namespace CollabCorp\Formatter\Contracts;
+namespace CollabCorp\Formatter\Support\Contracts;
 
 interface Formattable
 {
