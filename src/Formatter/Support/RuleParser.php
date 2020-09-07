@@ -54,12 +54,12 @@ class RuleParser extends ValidationRuleParser
         return parent::prepareRule($rule);
     }
 
-     /**
-     * Extract the rule name and parameters from a rule.
-     *
-     * @param  array|string  $rules
-     * @return array
-     */
+    /**
+    * Extract the rule name and parameters from a rule.
+    *
+    * @param  array|string  $rules
+    * @return array
+    */
     public static function parse($rules)
     {
         if ($rules instanceof Formattable || $rules instanceof Closure) {
