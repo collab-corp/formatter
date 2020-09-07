@@ -2,7 +2,7 @@
 
 namespace CollabCorp\Formatter\Tests;
 
-use CollabCorp\Formatter\Contracts\Formattable;
+use CollabCorp\Formatter\Support\Contracts\Formattable;
 
 class TesterFormatClass implements Formattable
 {
@@ -14,6 +14,6 @@ class TesterFormatClass implements Formattable
      */
     public function format($value)
     {
-        return $value."@@@@@hhhhh";
+        return $value."IWasAddedViaFormattableClass";
     }
 }

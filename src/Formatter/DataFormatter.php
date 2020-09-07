@@ -2,7 +2,10 @@
 
 namespace CollabCorp\Formatter;
 
+use Closure;
+use CollabCorp\Formatter\Support\Contracts\Formattable;
 use CollabCorp\Formatter\Support\RuleParser;
+use CollabCorp\Formatter\Support\ValueFormatter;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
 
@@ -40,6 +43,10 @@ class DataFormatter
         $this->data = $data;
 
         $this->rules = $rules;
+
+        $this->parser = new RuleParser($this->data);
+
+        $this->formatter = new ValueFormatter();
     }
 
     /**
@@ -52,6 +59,7 @@ class DataFormatter
     {
         return new static($data, $rules);
     }
+
     /**
      * Register a whitelist for the allowed callables.
      *
@@ -70,74 +78,31 @@ class DataFormatter
     {
         return $this->allowedCallables;
     }
-    /**
-     * Prepare arguments for a rule function call.
-     * @param  mixed  $value
-     * @param  array  $args
-     * @return array
-     */
-    protected function prepareArguments($value, array $args = [])
-    {
-        $parameters = [$value];
-
-        $parameters = array_map(function ($arg) use (&$parameters, $value) {
-            if ($arg === ':value:') {
-                $arg = $value;
-                array_pop($parameters);
-            }
-            return $arg;
-        }, $args);
-
-        return empty($parameters) ? [$value] : $parameters;
-    }
 
     /**
-     * Check if the given method that should
-     * be called on the underlying object.
-     * @param  string $method
-     * @return bool
-     */
-    protected function callableIsUnderlyingCall(string $method)
-    {
-        return substr($method, 0, 1) == '.';
-    }
-    /**
-     * Call a given callable using the
-     * given value and parameters.
-     * @param  string $value
-     * @return mixed
-     */
-    protected function call($callable, $value, array $args = [])
-    {
-        $args = $this->prepareArguments($value, $args);
-
-        // first check if the method should be called on the underlying object
-        // this is done using a .<method> convention. e.g to_carbon|.format:m/d/Y
-        if ($isUnderlyingCall = $this->callableIsUnderlyingCall($callable)) {
-            $callable = trim($callable, '.');
-        }
-        //if it is, call it.
-        if ($isUnderlyingCall) {
-            return $value->{$callable}(...$args);
-        //otherwise check if the callable is callable and whitelisted.
-        } elseif (!is_callable($callable) || !$this->isWhitelisted($callable)) {
-            throw new InvalidArgumentException(
-                sprintf('Encountered non callable [%s].', $callable)
-            );
-        }
-
-        return $callable(...$args);
-    }
-    /**
-     * Check if the given method is whitelisted.
+     * Apply the given rules to the given data key.
      *
-     * @param  string $method
-     * @return bool
+     * @param  string
+     * @param  array  $rules
+     * @return self
      */
-    protected function isWhitelisted(string $method)
+    public function applyRules(string $key, array $rules)
     {
-        return $this->allowedCallables == ['*'] ||
-            in_array($method, $this->allowedCallables);
+        if (!Arr::has($this->data, $key)) {
+            return $this;
+        }
+
+        $value = Arr::get($this->data, $key);
+
+        $this->formatter->setValue($value);
+
+        $this->formatter->setRules($rules);
+
+        $this->formatter->allowedCallables($this->allowedCallables);
+
+        Arr::set($this->data, $key, $this->formatter->apply()->get());
+
+        return $this;
     }
 
     /**
@@ -147,25 +112,10 @@ class DataFormatter
      */
     public function get()
     {
-        $parser = new RuleParser($this->data);
-
-        $parsed = $parser->explode($this->rules);
+        $parsed = $this->parser->explode($this->rules);
 
         foreach ($parsed->rules as $key => $rules) {
-            foreach ($rules as $rule) {
-                list($rule, $parameters) = $parser->parse($rule);
-
-                //todo wildcard???
-                $result = $this->call(
-                    $rule,
-                    Arr::get($this->data, $key),
-                    $parameters
-                );
-
-                Arr::set($this->data, $key, $result);
-            }
-
-            // $this->data = FormatterRuleParser::processRulesOnKey($this->data, $inputRules, $requestKey);
+            $this->applyRules($key, $rules);
         }
 
         return $this->data;
