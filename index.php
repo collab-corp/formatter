@@ -2,7 +2,6 @@
 
 use CollabCorp\Formatter\DataFormatter;
 
-
 /*
 |--------------------------------------------------------------------------
 | A file to play around with the package.
