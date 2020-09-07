@@ -27,7 +27,7 @@ class DataFormatter
      *
      * @var array
      */
-    protected static $allowedCallables = ['*'];
+    protected $allowedCallables = ['*'];
 
     /**
      * Construct a new instance.
@@ -46,54 +46,29 @@ class DataFormatter
      * Create an instance.
      * @param  array $data
      * @param  array $rules
-     * @return self
+     * @return CollabCorp\Formatter\DataFormatter
      */
     public static function create($data, $rules)
     {
         return new static($data, $rules);
     }
-
-    /**
-     * Check if the given method is whitelisted
-     * and is allowed to be called during formatting.
-     *
-     * @param  string $method
-     * @return bool
-     */
-    protected static function callableIsAllowed($method)
-    {
-        //todo check Formattable class/instance.
-        if (!is_callable($method)) {
-            return false;
-        }
-
-        if (
-            static::$allowedCallables == ['*'] ||
-            in_array($method, static::$allowedCallables)
-        ) {
-            return true;
-        }
-
-        return false;
-    }
-
     /**
      * Register a whitelist for the allowed callables.
      *
      * @param  array  $whitelist
      */
-    public static function allowedCallables(array $whitelist = [])
+    public function allowedCallables(array $whitelist = [])
     {
-        static::$allowedCallables = $whitelist;
+        $this->allowedCallables = $whitelist;
     }
 
     /**
      * Get the registered allowed callables.
      * @return array
      */
-    public static function getAllowedCallables()
+    public function getAllowedCallables()
     {
-        return static::$allowedCallables;
+        return $this->allowedCallables;
     }
     /**
      * Prepare arguments for a rule function call.
@@ -113,9 +88,19 @@ class DataFormatter
             return $arg;
         }, $args);
 
-        return $parameters;
+        return empty($parameters) ? [$value] : $parameters;
     }
 
+    /**
+     * Check if the given method that should
+     * be called on the underlying object.
+     * @param  string $method
+     * @return bool
+     */
+    protected function callableIsUnderlyingCall(string $method)
+    {
+        return substr($method, 0, 1) == '.';
+    }
     /**
      * Call a given callable using the
      * given value and parameters.
@@ -124,16 +109,37 @@ class DataFormatter
      */
     protected function call($callable, $value, array $args = [])
     {
-        if (!static::callableIsAllowed($callable)) {
+        $args = $this->prepareArguments($value, $args);
+
+        // first check if the method should be called on the underlying object
+        // this is done using a .<method> convention. e.g to_carbon|.format:m/d/Y
+        if ($isUnderlyingCall = $this->callableIsUnderlyingCall($callable)) {
+            $callable = trim($callable, '.');
+        }
+        //if it is, call it.
+        if ($isUnderlyingCall) {
+            return $value->{$callable}(...$args);
+        //otherwise check if the callable is callable and whitelisted.
+        } elseif (!is_callable($callable) || !$this->isWhitelisted($callable)) {
             throw new InvalidArgumentException(
-                sprintf('Encountered invalid callable [%s].', $callable)
+                sprintf('Encountered non callable [%s].', $callable)
             );
         }
 
-        $args = $this->prepareArguments($value, $args);
-
         return $callable(...$args);
     }
+    /**
+     * Check if the given method is whitelisted.
+     *
+     * @param  string $method
+     * @return bool
+     */
+    protected function isWhitelisted(string $method)
+    {
+        return $this->allowedCallables == ['*'] ||
+            in_array($method, $this->allowedCallables);
+    }
+
     /**
      * Get the formatted data.
      *
@@ -146,10 +152,6 @@ class DataFormatter
         $parsed = $parser->explode($this->rules);
 
         foreach ($parsed->rules as $key => $rules) {
-            if (is_string($rules)) {
-                $rules = explode('|', trim($rules, '|'));
-            }
-
             foreach ($rules as $rule) {
                 list($rule, $parameters) = $parser->parse($rule);
 
