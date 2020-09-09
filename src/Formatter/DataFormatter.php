@@ -4,7 +4,7 @@ namespace CollabCorp\Formatter;
 
 use Closure;
 use CollabCorp\Formatter\Support\Contracts\Formattable;
-use CollabCorp\Formatter\Support\RuleParser;
+use CollabCorp\Formatter\Support\CallableParser;
 use CollabCorp\Formatter\Support\ValueFormatter;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
@@ -23,7 +23,7 @@ class DataFormatter
      *
      * @var array
      */
-    protected $rules;
+    protected $callables;
 
     /**
      * The allowed callables.
@@ -36,15 +36,15 @@ class DataFormatter
      * Construct a new instance.
      *
      * @param array $data
-     * @param array  $rules
+     * @param array  $callables
      */
-    public function __construct(array $data, array $rules)
+    public function __construct(array $data, array $callables)
     {
         $this->data = $data;
 
-        $this->rules = $rules;
+        $this->callables = $callables;
 
-        $this->parser = new RuleParser($this->data);
+        $this->parser = new CallableParser($this->data);
 
         $this->formatter = new ValueFormatter();
     }
@@ -52,12 +52,12 @@ class DataFormatter
     /**
      * Create an instance.
      * @param  array $data
-     * @param  array $rules
+     * @param  array $callables
      * @return CollabCorp\Formatter\DataFormatter
      */
-    public static function create($data, $rules)
+    public static function create($data, $callables)
     {
-        return new static($data, $rules);
+        return new static($data, $callables);
     }
 
     /**
@@ -83,10 +83,10 @@ class DataFormatter
      * Apply the given rules to the given data key.
      *
      * @param  string
-     * @param  array  $rules
+     * @param  array  $callables
      * @return self
      */
-    public function applyRules(string $key, array $rules)
+    public function applyRules(string $key, array $callables)
     {
         if (!Arr::has($this->data, $key)) {
             return $this;
@@ -96,7 +96,7 @@ class DataFormatter
 
         $this->formatter->setValue($value);
 
-        $this->formatter->setRules($rules);
+        $this->formatter->setCallables($callables);
 
         $this->formatter->allowedCallables($this->allowedCallables);
 
@@ -112,10 +112,10 @@ class DataFormatter
      */
     public function get()
     {
-        $parsed = $this->parser->explode($this->rules);
+        $parsed = $this->parser->explode($this->callables);
 
-        foreach ($parsed->rules as $key => $rules) {
-            $this->applyRules($key, $rules);
+        foreach ($parsed->rules as $key => $callables) {
+            $this->applyRules($key, $callables);
         }
 
         return $this->data;

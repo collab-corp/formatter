@@ -8,7 +8,6 @@
          processIsolation="false"
          stopOnFailure="false"
          stopOnError="false"
-         syntaxCheck="true"
          verbose="true">
     <testsuites>
         <testsuite name="API Test Suite">

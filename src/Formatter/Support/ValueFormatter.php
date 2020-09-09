@@ -2,8 +2,8 @@
 namespace CollabCorp\Formatter\Support;
 
 use Closure;
+use CollabCorp\Formatter\Support\CallableParser;
 use CollabCorp\Formatter\Support\Contracts\Formattable;
-use CollabCorp\Formatter\Support\RuleParser;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -16,10 +16,10 @@ class ValueFormatter
     protected $value;
 
     /**
-     * The rules to apply to the value.
+     * The callables to apply to the value.
      * @var array
      */
-    protected $rules;
+    protected $callables;
 
     /**
      * The allowed callables.
@@ -32,13 +32,13 @@ class ValueFormatter
      * Construct a new instance.
      *
      * @param mixed $value
-     * @param array  $rules
+     * @param array $callables
      */
-    public function __construct($value = '', array $rules = [])
+    public function __construct($value = '', array $callables = [])
     {
         $this->value = $value;
 
-        $this->rules = $rules;
+        $this->callables = $callables;
     }
 
     /**
@@ -53,12 +53,12 @@ class ValueFormatter
     }
 
     /**
-     * Set the rules.
-     * @param mixed $rules
+     * Set the callables.
+     * @param mixed $callables
      */
-    public function setRules($rules)
+    public function setCallables($callables)
     {
-        $this->rules = $rules;
+        $this->callables = $callables;
 
         return $this;
     }
@@ -81,7 +81,7 @@ class ValueFormatter
     protected function prepareArguments($value, $callable, array $args = [])
     {
         //underlying function calls do not get the value passed in by default
-        //since the value is the function being called, value is not needed as a param.
+        //since the value is the function being called on, value is not needed as a param.
         if (is_object($value) && $this->callableIsUnderlyingCall($callable)) {
             $defaults = [];
         } else {
@@ -163,7 +163,7 @@ class ValueFormatter
      */
     protected function isWhitelisted($method)
     {
-        if ($method instanceof Formattable || $method instanceof Closure) {
+        if (CallableParser::isFormattableOrClosure($method)) {
             return true;
         }
 
@@ -189,26 +189,24 @@ class ValueFormatter
     }
 
     /**
-     * Apply the set rules on the value.
+     * Apply the set callables on the value.
      *
      * @return self
      */
     public function apply()
     {
-        $optional = $this->rules[0] ?? '';
+        foreach ($this->callables as $rule) {
+            list($rule, $parameters) = CallableParser::parse($rule);
 
-        //if the first rule is ? then check if
-        //the value is blank and if it should be processed.
-        if ($optional == '?') {
-            if (blank($this->value)) {
-                return $this;
-            } else {
-                array_shift($this->rules);
+            //if rule is ? then check if
+            //the value is blank break out if so.
+            if ($rule == '?') {
+                if (blank($this->value)) {
+                    return $this;
+                } else {
+                    continue;
+                }
             }
-        }
-
-        foreach ($this->rules as $rule) {
-            list($rule, $parameters) = RuleParser::parse($rule);
 
             $this->value = $this->call($rule, $this->value, $parameters);
         }
