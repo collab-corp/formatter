@@ -14,6 +14,7 @@ class DataFormatterTest extends TestCase
           'last_name'=>'   thompson',
           'date_of_birth'=>"   2018-04-01",
           'password'=>'abcdefgh12345',
+          'favorite_number'=>"24",
           'favorite_date'=>null,
           'get_notifications'=> true,
           'contact_info'=>[
@@ -31,12 +32,14 @@ class DataFormatterTest extends TestCase
     public function it_calls_callables_on_data()
     {
         $formatter = (new DataFormatter($this->data, [
-            'first_name'=>'trim|ucfirst'
+            'first_name'=>'trim|ucfirst',
+            'favorite_number'=>'intval'
         ]));
 
         $formattedData = $formatter->get();
 
         $this->assertEquals("Jim", $formattedData['first_name']);
+        $this->assertEquals(24, $formattedData['favorite_number']);
         $this->assertNotEquals($formattedData['first_name'], $this->data["first_name"]);
     }
     /** @test */
