@@ -12,7 +12,7 @@ class DataFormatterTest extends TestCase
         $this->data = [
           'first_name'=>'    jim    ',
           'last_name'=>'   thompson',
-          'date_of_birth'=>"   2018-04-01",
+          'date_of_birth'=>"2018-04-01",
           'password'=>'abcdefgh12345',
           'favorite_number'=>"24",
           'favorite_date'=>null,
@@ -36,7 +36,7 @@ class DataFormatterTest extends TestCase
             'favorite_number'=>'intval'
         ]));
 
-        $formattedData = $formatter->get();
+        $formattedData = $formatter->apply()->get();
 
         $this->assertEquals("Jim", $formattedData['first_name']);
         $this->assertEquals(24, $formattedData['favorite_number']);
@@ -47,7 +47,7 @@ class DataFormatterTest extends TestCase
     {
         $formatter = (new DataFormatter($this->data, []));
 
-        $formattedData = $formatter->get();
+        $formattedData = $formatter->apply()->get();
         //nothing should change
         $this->assertEquals($this->data, $formattedData);
     }
@@ -61,7 +61,7 @@ class DataFormatterTest extends TestCase
             'first_name'=>'idont_exist'
         ]));
 
-        $formattedData = $formatter->get();
+        $formattedData = $formatter->apply()->get();
     }
 
     /** @test */
@@ -71,7 +71,7 @@ class DataFormatterTest extends TestCase
             'password'=>'trim|preg_replace:/[^0-9]/,,:value:'
         ]));
 
-        $formattedData = $formatter->get();
+        $formattedData = $formatter->apply()->get();
         $this->assertEquals("12345", $formattedData['password']);
         $this->assertNotEquals($formattedData['password'], $this->data['password']);
     }
@@ -84,7 +84,7 @@ class DataFormatterTest extends TestCase
             'favorite_date'=>'?|to_carbon|.format:m/d/Y'
         ]));
 
-        $formattedData = $formatter->get();
+        $formattedData = $formatter->apply()->get();
 
         $this->assertEquals($this->data['favorite_date'], $formattedData['favorite_date']);
         $this->assertNotEquals("04/01/2018", $formattedData['favorite_date']);
@@ -96,7 +96,7 @@ class DataFormatterTest extends TestCase
             }, '?', '.format:m/d/Y']
         ]));
 
-        $formattedData = $formatter->get();
+        $formattedData = $formatter->apply()->get();
 
         $this->assertEquals(null, $formattedData['favorite_date']);
 
@@ -111,9 +111,10 @@ class DataFormatterTest extends TestCase
             },
         ]));
 
-        $formattedData = $formatter->get();
+        $formattedData = $formatter->apply()->get();
 
         $this->assertEquals("Yes", $formattedData['get_notifications']);
+
         $this->assertNotEquals($this->data['get_notifications'], $formattedData['get_notifications']);
     }
 
@@ -121,12 +122,13 @@ class DataFormatterTest extends TestCase
     public function it_can_delegate_to_underlying_objects()
     {
         $formatter = (new DataFormatter($this->data, [
-            'date_of_birth'=>'to_carbon|.format:m/d/Y'
+            'date_of_birth'=>'trim|to_carbon|.addDays:2|.format:m/d/Y'
         ]));
 
-        $formattedData = $formatter->get();
+        $formattedData = $formatter->apply()->get();
 
         $this->assertNotEquals($formattedData['date_of_birth'], $this->data['date_of_birth']);
-        $this->assertEquals('04/01/2018', $formattedData['date_of_birth']);
+
+        $this->assertEquals('04/02/2018', $formattedData['date_of_birth']);
     }
 }

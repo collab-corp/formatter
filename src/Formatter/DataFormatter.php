@@ -104,6 +104,20 @@ class DataFormatter
 
         return $this;
     }
+    /**
+     * Apply the callables.
+     * @return self
+     */
+    public function apply()
+    {
+        $parsed = $this->parser->explode($this->callables);
+
+        foreach ($parsed->rules as $key => $callables) {
+            $this->applyRules($key, $callables);
+        }
+
+        return $this;
+    }
 
     /**
      * Get the formatted data.
@@ -112,11 +126,6 @@ class DataFormatter
      */
     public function get()
     {
-        $parsed = $this->parser->explode($this->callables);
-
-        foreach ($parsed->rules as $key => $callables) {
-            $this->applyRules($key, $callables);
-        }
 
         return $this->data;
     }

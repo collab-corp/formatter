@@ -49,7 +49,11 @@ $rules = [
       return 'Address Two Is: '.$address;
     }],
 ];
+$formatter = new ValueFormatter(null, [
+    "?", //tells the class not to process callables if value is blank
+    'to_carbon',
+    '.addDays:1',
+    '.format:m/d/Y'
+]);
 
-$formatter = new DataFormatter($data, $rules);
-
-dd($formatter->get());
+dd($formatter->apply()->get());
