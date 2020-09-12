@@ -46,7 +46,7 @@ $rules = [
     'contact_info.*number'=>'preg_replace:/[^0-9]/,,:value:',
     'contact_info.*email*'=>[new TesterFormatClass],
     'contact_info.address_two'=>[function ($address) {
-      return 'Address Two Is: '.$address;
+        return 'Address Two Is: '.$address;
     }],
 ];
 $formatter = new ValueFormatter(null, [
