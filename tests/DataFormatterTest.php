@@ -12,7 +12,7 @@ class DataFormatterTest extends TestCase
         $this->data = [
           'first_name'=>'    jim    ',
           'last_name'=>'   thompson',
-          'date_of_birth'=>"2018-04-01",
+          'date_of_birth'=>"2020-05-24",
           'password'=>'abcdefgh12345',
           'favorite_number'=>"24",
           'favorite_date'=>null,
@@ -122,13 +122,13 @@ class DataFormatterTest extends TestCase
     public function it_can_delegate_to_underlying_objects()
     {
         $formatter = (new DataFormatter($this->data, [
-            'date_of_birth'=>'trim|to_carbon|.addDays:2|.format:m/d/Y'
+            'date_of_birth'=>'trim|to_carbon|.addDays:1|.format:m/d/Y'
         ]));
 
         $formattedData = $formatter->apply()->get();
 
         $this->assertNotEquals($formattedData['date_of_birth'], $this->data['date_of_birth']);
 
-        $this->assertEquals('04/02/2018', $formattedData['date_of_birth']);
+        $this->assertEquals('05/25/2020', $formattedData['date_of_birth']);
     }
 }
