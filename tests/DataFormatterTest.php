@@ -2,7 +2,10 @@
 
 namespace CollabCorp\Formatter\Tests;
 
+use Closure;
 use CollabCorp\Formatter\DataFormatter;
+use CollabCorp\Formatter\Support\Contracts\Formattable;
+use CollabCorp\Formatter\Support\Exceptions\ExitProcessingException;
 use InvalidArgumentException;
 
 class DataFormatterTest extends TestCase
@@ -75,7 +78,41 @@ class DataFormatterTest extends TestCase
         $this->assertEquals("12345", $formattedData['password']);
         $this->assertNotEquals($formattedData['password'], $this->data['password']);
     }
+    /** @test */
+    public function it_can_process_callbacks()
+    {
+        $formatter = (new DataFormatter($this->data, [
+            'get_notifications'=> function($value){
+                return $value === true ? 'Yes': 'No';
+            },
+        ]));
 
+        $formattedData = $formatter->apply()->get();
+
+        $this->assertEquals("Yes", $formattedData['get_notifications']);
+
+        $this->assertNotEquals($this->data['get_notifications'], $formattedData['get_notifications']);
+    }
+
+    /** @test */
+    public function it_can_process_formattable_objects()
+    {
+        $formatter = (new DataFormatter($this->data, [
+            "get_notifications"=>new class() implements Formattable
+            {
+                public function format($value, Closure $exit)
+                {
+                    return $value ? "Yes" : "No";
+                }
+            }
+        ]));
+
+        $formattedData = $formatter->apply()->get();
+
+        $this->assertEquals("Yes", $formattedData['get_notifications']);
+
+        $this->assertNotEquals($this->data['get_notifications'], $formattedData['get_notifications']);
+    }
     /** @test */
     public function it_can_specify_optional_callables_on_blank_input()
     {
@@ -101,21 +138,43 @@ class DataFormatterTest extends TestCase
         $this->assertEquals(null, $formattedData['favorite_date']);
 
     }
-
     /** @test */
-    public function it_can_process_callbacks()
+    public function it_can_specify_optional_callables_on_callback()
     {
         $formatter = (new DataFormatter($this->data, [
-            'get_notifications'=> function($value){
-                return $value === true ? 'Yes': 'No';
-            },
+            'favorite_date'=>[
+                function($value, $exit){
+                    $exit();
+                },
+                'to_carbon',
+                '.format:m/d/Y'
+            ]
         ]));
 
         $formattedData = $formatter->apply()->get();
 
-        $this->assertEquals("Yes", $formattedData['get_notifications']);
+        $this->assertEquals($this->data['favorite_date'], $formattedData['favorite_date']);
+        $this->assertNotEquals("04/01/2018", $formattedData['favorite_date']);
+    }
+    /** @test */
+    public function it_can_specify_optional_callables_on_formattable_class()
+    {
+        $formatter = (new DataFormatter($this->data, [
+            'favorite_date'=>[
+                new class() implements Formattable {
+                    public function format($format, Closure $exit){
+                        $exit();
+                    }
+                },
+                'to_carbon',
+                '.format:m/d/Y'
+            ]
+        ]));
 
-        $this->assertNotEquals($this->data['get_notifications'], $formattedData['get_notifications']);
+        $formattedData = $formatter->apply()->get();
+
+        $this->assertEquals($this->data['favorite_date'], $formattedData['favorite_date']);
+        $this->assertNotEquals("04/01/2018", $formattedData['favorite_date']);
     }
 
     /** @test */

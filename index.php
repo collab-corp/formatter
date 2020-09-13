@@ -1,8 +1,8 @@
 <?php
 
 use CollabCorp\Formatter\DataFormatter;
+use CollabCorp\Formatter\Support\Contracts\Formattable;
 use CollabCorp\Formatter\Support\ValueFormatter;
-use CollabCorp\Formatter\Tests\TesterFormatClass;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,16 +44,24 @@ $rules = [
     'favorite_numbers'=>'preg_replace:/[^0-9]/,,value',
     'contact_info.address_one'=>'trim:$|ucwords',
     'contact_info.*number'=>'preg_replace:/[^0-9]/,,:value:',
-    'contact_info.*email*'=>[new TesterFormatClass],
+    'contact_info.*email*'=>[new class() implements Formattable{
+        public function format($value, Closure $exit)
+        {
+            return $value;
+        }
+    }],
     'contact_info.address_two'=>[function ($address) {
       return 'Address Two Is: '.$address;
     }],
 ];
 $formatter = new ValueFormatter(null, [
-    "?", //tells the class not to process callables if value is blank
+    function($value){
+
+    },
     'to_carbon',
     '.addDays:1',
     '.format:m/d/Y'
 ]);
+
 
 dd($formatter->apply()->get());

@@ -55,6 +55,7 @@ automatically passes your value as the first parameter to every function with th
 delegation to objects/instances (See object values section below).
 
 <h4>What if value isnt the first parameter to my function?</h4>
+
 No problem, you can specify what order you want your value passed by using the `:value:` placeholder:
 
 For example, `preg_replace` accepts a value to format as the third parameter:
@@ -81,7 +82,7 @@ $formatter = new ValueFormatter("   uncle bob   ", ['trim', 'ucwords']);
 $formatter->allowedCallables(["trim"]); //only trim is allowed
 
 // throws  InvalidArgumentException:
-// "Encountered non whitelisted or non callable [ucwords]"
+// "Encountered non whitelisted function or non callable [ucwords]"
 $formatter->apply()->get();
 ```
 
@@ -99,11 +100,59 @@ $formatter = new ValueFormatter(new Carbon\Carbon('2020-05-24'), [
 
 $formatter->apply()->get() // returns "05/25/2020"
 ```
+### Closures/Formattable Classes
+You can use closures to process complicated formatting:
+
+```php
+
+
+$formatter = new ValueFormatter("the value", [
+    function($value){
+      //do something to the value
+      return $value;
+    },
+    ...
+]);
+
+```
+Or you can also implement our `CollabCorp\Formatter\Support\Contracts\Formattable` contract:
+
+```php
+
+
+use CollabCorp\Formatter\Support\Contracts\Formattable;
+use Closure;
+
+class FormatValue implements Formattable
+{
+    /**
+     * Format the value.
+     *
+     * @param  mixed $value
+     * @param  Closure $exit
+     * @return mixed
+     */
+    public function format($value, Closure $exit)
+    {
+        // do stuff with $value
+        // see Optional Formatting section for more on "$exit"
+        return $value;
+    }
+}
+
+
+$formatter = new ValueFormatter("The value", [
+    "trim"
+    new FormatValue
+]);
+
+```
+
 
 ### Optional Formatting/Blank Input
 Sometimes you may only want to format a value if the value isnt `null` or "blank":
-You can specify a `?` anywhere in the chain of callables to specify if the formatter
-should break out of processing callables, often this shlould be defined in front of all
+You can specify `?` anywhere in the chain of callables to specify if the formatter
+should break out of processing callables, often this should be defined in front of all
 your callables:
 
 ```php
@@ -118,8 +167,33 @@ $formatter->apply()->get(); // returns original null value
 
 ```
 
-**Note:** This packages uses Laravel's [blank](https://laravel.com/docs/8.x/helpers#method-blank) helper to determine blank values.
+**Note:** This packages uses Laravel's [blank](https://laravel.com/docs/8.x/helpers#method-blank) helper to determine blank/empty values. If you have more complicated logic to break out of rules, use a closure or
+a `Formattable` class and call the 2nd argument `exit` callback:
 
+```php
+
+$formatter = new ValueFormatter(null, [
+    function($value, $exit){
+        if($quitProcessing){
+            $exit(); // tells formatter to quit processing.
+        }
+    },
+    'to_carbon',
+    '.addDays:1',
+    '.format:m/d/Y'
+]);
+
+```
+
+### Formatting multiple values
+
+So far all the examples have been using a single value, but often times we are working
+with much more data. This is where the `DataFormatter` class is preferred:
+
+```php
+
+
+```
 
 ## Contribute
 

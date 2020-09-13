@@ -4,6 +4,7 @@ namespace CollabCorp\Formatter\Support;
 use Closure;
 use CollabCorp\Formatter\Support\CallableParser;
 use CollabCorp\Formatter\Support\Contracts\Formattable;
+use CollabCorp\Formatter\Support\Exceptions\ExitProcessingException;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -34,10 +35,13 @@ class ValueFormatter
      * @param mixed $value
      * @param array $callables
      */
-    public function __construct($value = '', array $callables = [])
+    public function __construct($value = '', $callables = [])
     {
         $this->value = $value;
 
+        if(is_string($callables)){
+            $callables = explode("|", $callables);
+        }
         $this->callables = $callables;
     }
 
@@ -122,19 +126,33 @@ class ValueFormatter
 
         //check if its a custom formattable class
         if ($callable instanceof Formattable) {
-            return $callable->format($value);
+            return $callable->format($value, $this->exitProcessingCallback());
+        // or a callback
+        }else if($callable instanceof Closure){
+            return $callable($value, $this->exitProcessingCallback());
         }
         //otherwise check if the method is callable and whitelisted.
-        if (is_callable($callable) && $this->isWhitelisted($callable)) {
+        else if (is_callable($callable) && $this->isWhitelisted($callable)) {
             return $callable(...$args);
         }
 
         throw new \InvalidArgumentException(
             sprintf(
-                'Encountered non whitelisted or non callable [%s].',
+                'Encountered non whitelisted function or non callable [%s].',
                 $callable
             )
         );
+    }
+
+    /**
+     * Return a callback for passing closures/formattable classes.
+     * @return function
+     */
+    protected function exitProcessingCallback()
+    {
+        return function(){
+            throw new ExitProcessingException();
+        };
     }
 
     /**
@@ -208,9 +226,13 @@ class ValueFormatter
                 }
             }
 
-            $this->value = $this->call($rule, $this->value, $parameters);
-        }
+            try {
+                $this->value = $this->call($rule, $this->value, $parameters);
+            } catch (ExitProcessingException $e) {
+                return $this;
+            }
 
+        }
         return $this;
     }
 }
