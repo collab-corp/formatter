@@ -39,7 +39,7 @@ class ValueFormatter
     {
         $this->value = $value;
 
-        if(is_string($callables)){
+        if (is_string($callables)) {
             $callables = explode("|", $callables);
         }
         $this->callables = $callables;
@@ -128,11 +128,11 @@ class ValueFormatter
         if ($callable instanceof Formattable) {
             return $callable->format($value, $this->exitProcessingCallback());
         // or a callback
-        }else if($callable instanceof Closure){
+        } elseif ($callable instanceof Closure) {
             return $callable($value, $this->exitProcessingCallback());
         }
         //otherwise check if the method is callable and whitelisted.
-        else if (is_callable($callable) && $this->isWhitelisted($callable)) {
+        elseif (is_callable($callable) && $this->isWhitelisted($callable)) {
             return $callable(...$args);
         }
 
@@ -150,7 +150,7 @@ class ValueFormatter
      */
     protected function exitProcessingCallback()
     {
-        return function(){
+        return function () {
             throw new ExitProcessingException();
         };
     }
@@ -231,7 +231,6 @@ class ValueFormatter
             } catch (ExitProcessingException $e) {
                 return $this;
             }
-
         }
         return $this;
     }
