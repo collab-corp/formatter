@@ -30,4 +30,3 @@ trait FormatsData
         return (new ValueFormatter($value, $callables));
     }
 }
-

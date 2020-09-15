@@ -1,6 +1,7 @@
 <?php
 
 namespace CollabCorp\Formatter\Support\Contracts;
+
 use Closure;
 
 interface Formattable
