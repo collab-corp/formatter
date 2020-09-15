@@ -1,3 +1,4 @@
+
 # Input Formatter
 
 [![Build Status](https://travis-ci.org/collab-corp/formatter.svg?branch=master)](https://travis-ci.org/collab-corp/formatter)
@@ -34,9 +35,9 @@ $formatter->apply()->get(); // returns "Uncle Bob"
 
 ```
 
-### Passing Arguments/Params To Callables
+### Passing Arguments To Callables
 
-You can specify arguments using a `:` followed comma delimited list  `e.g callable:arg1,arg2`:
+You can specify arguments using a `:` followed by a comma delimited list `e.g callable:arg1,arg2`:
 
 ```php
 
@@ -45,14 +46,14 @@ function suffix_string($value, $suffix)
     return $value.$suffix;
 }
 
-$formatter = new ValueFormatter("Foo", ['trim', 'suffix_string:Bar']);
+$formatter = new ValueFormatter("  Foo  ", ['trim', 'suffix_string:Bar']);
 
 $formatter->apply()->get(); // returns "FooBar"
 ```
 
 **Note:** Notice that we only specified the `suffix` parameter. The `ValueFormatter` class
 automatically passes your value as the first parameter to every function with the exception of
-delegation to objects/instances (See object values section below).
+delegation to objects/instances (See Using Instances section below).
 
 <h4>What if value isnt the first parameter to my function?</h4>
 
@@ -101,7 +102,7 @@ $formatter = new ValueFormatter(new Carbon\Carbon('2020-05-24'), [
 $formatter->apply()->get() // returns "05/25/2020"
 ```
 ### Closures/Formattable Classes
-You can use closures to process complicated formatting:
+You can use closures for formatting your value as well:
 
 ```php
 
@@ -115,7 +116,7 @@ $formatter = new ValueFormatter("the value", [
 ]);
 
 ```
-Or you can also implement our `CollabCorp\Formatter\Support\Contracts\Formattable` contract:
+Or you can also implement our `CollabCorp\Formatter\Support\Contracts\Formattable` contract and use instances:
 
 ```php
 
@@ -144,6 +145,8 @@ class FormatValue implements Formattable
 $formatter = new ValueFormatter("The value", [
     "trim"
     new FormatValue
+    // or using class constant:
+     FormatValue::class // formatter will new up the class.
 ]);
 
 ```
@@ -188,12 +191,125 @@ $formatter = new ValueFormatter(null, [
 ### Formatting multiple values
 
 So far all the examples have been using a single value, but often times we are working
-with much more data. This is where the `DataFormatter` class is preferred:
+with much more data from client requests. This is where the `DataFormatter` class is preferred:
+
+```php
+use CollabCorp\Formatter\DataFormatter;
+
+$data = [
+  'first_name'=>'    jim    ',
+  'last_name'=>'   thompson',
+  'phone_number'=>'123-456-7890',
+  'date_of_birth'=>"1991-05-01",
+  ...
+];
+
+$callables = [
+    'first_name'=>'trim|ucfirst',
+    'last_name'=>'trim|ucfirst',
+    'phone_number'=>'preg_replace:/[^0-9]/,,:value:',
+    'date_of_birth'=>'?|to_carbon|.format:m/d/y',
+    ...
+];
+$formatter = new DataFormatter($data, $callables);
+
+$formatter->apply()->get(); //returns formatted data
+```
+
+### Array Input
+
+The `DataFormatter` class makes it easy to work with array input using dot notation:
 
 ```php
 
+$data = [
+  'contact_info'=>[
+    'first_name'=>'    jim    ',
+    'last_name'=>'   thompson',
+    'phone_number'=>'123-456-7890',
+    'address'=>'123 some lane.'
+  ]
+];
+
+$callables = [
+    'contact_info.first_name'=>'trim|ucwords',
+    'contact_info.last_name'=>'trim|ucwords',
+    'contact_info.phone_number'=>'preg_replace:/[^0-9]/,,:value:',
+    'contact_info.address'=>[function ($address) {
+      return 'Address Is: '.$address;
+    }],
+];
+$formatter = new DataFormatter($data, $callables);
+
+$formatter->apply()->get();
+```
+
+### Wildcard Formatting
+
+Callables can contain wildcards as well:
+
+```php
+$data = [
+    'first_name'=>'    jim    ',
+    'last_name'=>'   thompson',
+    ...
+];
+$callables = [
+    //apply to all keys that contain "name"
+    '*name*'=>'trim|ucwords',
+
+    //*name - ends with
+    //name* - starts with
+];
+
+$formatter = new DataFormatter($data, $callables);
+
+$formatter->apply()->get();
 
 ```
+
+This includes array input:
+
+
+```php
+
+$callables = [
+    'contact_info.*name*'=>'trim|ucwords',
+    // 'contact_info.*name'=>'trim|ucwords',
+    // 'contact_info.name*'=>'trim|ucwords',
+];
+
+$formatter = new DataFormatter($data, $callables);
+
+$formatter->apply()->get();
+```
+
+### Concerns
+
+If you prefer using a concern to easily create formatter instances, we provide the `CollabCorp\Formatter\Support\Concerns\FormatsData` trait for easy access:
+
+
+```php
+<?php
+
+use CollabCorp\Formatter\Support\Concerns\FormatsData;
+
+class SomeClass
+{
+
+    use FormatsData;
+
+    public function someFunction()
+    {
+        //returns ValueFormatter
+        $this->formatValue("...", [...])->apply()->get();
+        //returns DataFormatter
+        $this->formatData([...], [...])->apply()->get();
+    }
+}
+
+```
+
 
 ## Contribute
 

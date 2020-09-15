@@ -105,6 +105,18 @@ class ValueFormatter
     }
 
     /**
+     * Prepare the callable for execution.
+     * @param mixed $callable
+     * @return mixed
+     */
+    protected function prepareCallable($callable)
+    {
+        if(is_string($callable) && is_subclass_of($callable, Formattable::class)){
+            $callable = new $callable;
+        }
+        return $callable;
+    }
+    /**
      * Call callable using the given value and parameters.
      *
      * @param  string $value
@@ -114,6 +126,9 @@ class ValueFormatter
     {
         //first prepare the arguments for the function call.
         $args = $this->prepareArguments($value, $callable, $args);
+
+        // prep the callable for execution if needed.
+        $callable = $this->prepareCallable($callable);
 
         // check if the method should be called on an underlying object
         // this is done using a .<method> convention.
@@ -220,7 +235,7 @@ class ValueFormatter
             //the value is blank break out if so.
             if ($rule == '?') {
                 if (blank($this->value)) {
-                    return $this;
+                    break;
                 } else {
                     continue;
                 }
@@ -229,7 +244,7 @@ class ValueFormatter
             try {
                 $this->value = $this->call($rule, $this->value, $parameters);
             } catch (ExitProcessingException $e) {
-                return $this;
+                break;
             }
 
         }

@@ -35,33 +35,26 @@ $data = [
   'more_data'=> '     something',
 
 ];
-
-$rules = [
+class FormatExample implements Formattable{
+    public function format($value, Closure $exit)
+    {
+        return $value;
+    }
+}
+$callables = [
     'first_name'=>'trim',
     'last_name'=>'trim|ucfirst',
     'phone_number'=>'preg_replace:/[^0-9]/,,:value:', // see extra section to learn what "$value" is
     'date_of_birth'=>'?|to_carbon|.format:m/d/y', // see extra section on delegating function calls to underlying objects
-    'favorite_numbers'=>'preg_replace:/[^0-9]/,,value',
+    'favorite_numbers'=>'preg_replace:/[^0-9]/,,:value:',
     'contact_info.address_one'=>'trim:$|ucwords',
     'contact_info.*number'=>'preg_replace:/[^0-9]/,,:value:',
-    'contact_info.*email*'=>[new class() implements Formattable{
-        public function format($value, Closure $exit)
-        {
-            return $value;
-        }
-    }],
+    'contact_info.*email*'=>[FormatExample::class],
     'contact_info.address_two'=>[function ($address) {
       return 'Address Two Is: '.$address;
     }],
 ];
-$formatter = new ValueFormatter(null, [
-    function($value){
-
-    },
-    'to_carbon',
-    '.addDays:1',
-    '.format:m/d/Y'
-]);
+$formatter = new DataFormatter($data, $callables);
 
 
 dd($formatter->apply()->get());
