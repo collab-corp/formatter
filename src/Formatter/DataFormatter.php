@@ -126,7 +126,6 @@ class DataFormatter
      */
     public function get()
     {
-
         return $this->data;
     }
 }
