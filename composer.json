@@ -9,7 +9,7 @@
         { "name": "Jonas Hansen", "email": "jonas.kerwin.hansen@gmail.com" }
     ],
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.3",
         "illuminate/support": "~6.0|~7.0|^8.0",
         "illuminate/validation": "~6.0|~7.0|^8.0"
     },
