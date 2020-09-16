@@ -64,12 +64,12 @@ class CallableParser extends ValidationRuleParser
         return parent::prepareRule($callable);
     }
 
-     /**
-     * Extract the callable name and parameters from a callable.
-     *
-     * @param  array|string  $callables
-     * @return array
-     */
+    /**
+    * Extract the callable name and parameters from a callable.
+    *
+    * @param  array|string  $callables
+    * @return array
+    */
     public static function parse($callables)
     {
         if (static::isFormattableOrClosure($callables)) {

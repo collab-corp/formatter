@@ -35,7 +35,8 @@ $data = [
   'more_data'=> '     something',
 
 ];
-class FormatExample implements Formattable{
+class FormatExample implements Formattable
+{
     public function format($value, Closure $exit)
     {
         return $value;
@@ -51,7 +52,7 @@ $callables = [
     'contact_info.*number'=>'preg_replace:/[^0-9]/,,:value:',
     'contact_info.*email*'=>[FormatExample::class],
     'contact_info.address_two'=>[function ($address) {
-      return 'Address Two Is: '.$address;
+        return 'Address Two Is: '.$address;
     }],
 ];
 $formatter = new DataFormatter($data, $callables);
