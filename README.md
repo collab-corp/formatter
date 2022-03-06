@@ -4,16 +4,7 @@
 [![Build Status](https://travis-ci.org/collab-corp/formatter.svg?branch=master)](https://travis-ci.org/collab-corp/formatter)
 [![StyleCI](https://styleci.io/repos/119897298/shield?branch=master)](https://styleci.io/repos/119897298)
 
-A php package for formatting data/values.
-
-<p>
-  It is pretty common to have to format/sanitize data to get it in the format we need it to be in. This package
-  aims to make it easy to do so without having to dirty up your code with several function calls that leave your code poorly
-  nested or hard to read. If you are familiar with
-  the Laravel framework, then the syntax should feel familiar. In fact, this package utilizes several support classes used in
-  the Laravel framework.
-</p>
-
+A php package for formatting data/values using a laravel validation like syntax, powered by `Illuminate\Support` components.
 
 ## Installation
 
@@ -74,6 +65,7 @@ $formatter->apply()->get(); // returns "###123"
 ```
 
 ### Whitelisting Allowed Callables
+
 By default, all callables are allowed to be called, but if you are dynamically calling callables or
 want to add a protection layer, it may be worth specifying what callable functions should be allowed:
 
@@ -88,6 +80,7 @@ $formatter->apply()->get();
 ```
 
 ### Using Instances/Object Values & Method Chaining
+
 It is possible to pass an object/instance to the formatter and utilize any methods
 on that instance. Using a `.<methodName>` convention you can specify method chaining on that
 instance. For example take a [Carbon](https://carbon.nesbot.com/docs/) instance:
@@ -101,7 +94,9 @@ $formatter = new ValueFormatter(new Carbon\Carbon('2020-05-24'), [
 
 $formatter->apply()->get() // returns "05/25/2020"
 ```
+
 ### Closures/Formattable Classes
+
 You can use closures for formatting your value as well:
 
 ```php
@@ -109,14 +104,14 @@ You can use closures for formatting your value as well:
 
 $formatter = new ValueFormatter("the value", [
     function($value){
-      //do something to the value
-      return $value;
+        //do something to the value
+        return $value;
     },
     ...
 ]);
 
 ```
-Or you can also implement our `CollabCorp\Formatter\Support\Contracts\Formattable` contract and use instances:
+Or you can also implement the `CollabCorp\Formatter\Support\Contracts\Formattable` contract and use instances:
 
 ```php
 
@@ -135,8 +130,14 @@ class FormatValue implements Formattable
      */
     public function format($value, Closure $exit)
     {
-        // do stuff with $value
-        // see Optional Formatting section for more on "$exit"
+        // quit formatting value(s)
+        if($someCondition){
+            $exit();
+        }
+
+        // or change the $value
+        $value = "Changed"
+
         return $value;
     }
 }
@@ -153,6 +154,7 @@ $formatter = new ValueFormatter("The value", [
 
 
 ### Optional Formatting/Blank Input
+
 Sometimes you may only want to format a value if the value isnt `null` or "blank":
 You can specify `?` anywhere in the chain of callables to specify if the formatter
 should break out of processing callables, often this should be defined in front of all
@@ -170,8 +172,8 @@ $formatter->apply()->get(); // returns original null value
 
 ```
 
-**Note:** This packages uses Laravel's [blank](https://laravel.com/docs/8.x/helpers#method-blank) helper to determine blank/empty values. If you have more complicated logic to break out of rules, use a closure or
-a `Formattable` class and call the 2nd argument `exit` callback:
+**Note:** This packages uses Laravel's [blank](https://laravel.com/docs/8.x/helpers#method-blank) helper to determine blank/empty values.
+If you have more complicated logic to break out of rules, use a closure or a `Formattable` class and call the 2nd argument `exit` callback:
 
 ```php
 
@@ -211,6 +213,7 @@ $callables = [
     'date_of_birth'=>'?|to_carbon|.format:m/d/y',
     ...
 ];
+
 $formatter = new DataFormatter($data, $callables);
 
 $formatter->apply()->get(); //returns formatted data
@@ -218,7 +221,7 @@ $formatter->apply()->get(); //returns formatted data
 
 ### Array Input
 
-The `DataFormatter` class makes it easy to work with array input using dot notation:
+You may also format array data using dot notation:
 
 ```php
 
@@ -257,9 +260,6 @@ $data = [
 $callables = [
     //apply to all keys that contain "name"
     '*name*'=>'trim|ucwords',
-
-    //*name - ends with
-    //name* - starts with
 ];
 
 $formatter = new DataFormatter($data, $callables);
@@ -286,7 +286,7 @@ $formatter->apply()->get();
 
 ### Concerns
 
-If you prefer using a concern to easily create formatter instances, we provide the `CollabCorp\Formatter\Support\Concerns\FormatsData` trait for easy access:
+If you prefer using a trait to easily create formatter instances, we provide the `CollabCorp\Formatter\Support\Concerns\FormatsData` trait for easy access:
 
 
 ```php
@@ -316,9 +316,7 @@ class SomeClass
 Contributions are always welcome in the following manner:
 - Issue Tracker
 - Pull Requests
-- Collab Corp Slack(Will send invite as requested)
-
-
+- Collab Corp Discord (Will send invite as requested)
 
 
 License

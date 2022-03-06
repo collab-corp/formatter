@@ -53,9 +53,10 @@ class CallableParser extends ValidationRuleParser
     * Prepare the given callable for parsing.
     *
     * @param  mixed  $callable
+    * @param  string  $attribute
     * @return mixed
     */
-    protected function prepareRule($callable)
+    protected function prepareRule($callable, $attribute)
     {
         if (is_string($callable) || static::isFormattableOrClosure($callable)) {
             return $callable;

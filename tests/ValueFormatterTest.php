@@ -20,6 +20,7 @@ class ValueFormatterTest extends TestCase
 
         $this->assertEquals("Uncle Bob", $formattedValue);
     }
+
     /** @test */
     public function it_calls_callables_on_data_only_if_specified()
     {

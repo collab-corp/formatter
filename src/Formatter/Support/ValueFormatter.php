@@ -12,6 +12,7 @@ class ValueFormatter
 {
     /**
      * The value being formatted.
+     *
      * @var mixed
      */
     protected $value;
@@ -20,14 +21,14 @@ class ValueFormatter
      * The callables to apply to the value.
      * @var array
      */
-    protected $callables;
+    protected array $callables;
 
     /**
      * The allowed callables.
      *
      * @var array
      */
-    protected $allowedCallables = ['*'];
+    protected array $allowedCallables = ['*'];
 
     /**
      * Construct a new instance.
@@ -47,6 +48,7 @@ class ValueFormatter
 
     /**
      * Set the value.
+     *
      * @param mixed $value
      */
     public function setValue($value)
@@ -58,6 +60,7 @@ class ValueFormatter
 
     /**
      * Set the callables.
+     *
      * @param mixed $callables
      */
     public function setCallables($callables)
@@ -66,8 +69,10 @@ class ValueFormatter
 
         return $this;
     }
+
     /**
      * Get the value.
+     *
      * @return mixed
      */
     public function get()
@@ -101,11 +106,13 @@ class ValueFormatter
                 break;
             }
         }
+
         return $parameters;
     }
 
     /**
      * Prepare the callable for execution.
+     *
      * @param mixed $callable
      * @return mixed
      */
@@ -118,6 +125,7 @@ class ValueFormatter
     }
     /**
      * Call callable using the given value and parameters.
+     *
      *
      * @param  string $value
      * @return mixed

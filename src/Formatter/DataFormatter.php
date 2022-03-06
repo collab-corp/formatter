@@ -2,12 +2,9 @@
 
 namespace CollabCorp\Formatter;
 
-use Closure;
-use CollabCorp\Formatter\Support\Contracts\Formattable;
 use CollabCorp\Formatter\Support\CallableParser;
 use CollabCorp\Formatter\Support\ValueFormatter;
 use Illuminate\Support\Arr;
-use InvalidArgumentException;
 
 class DataFormatter
 {
@@ -16,21 +13,21 @@ class DataFormatter
      *
      * @var array
      */
-    protected $data;
+    protected array $data;
 
     /**
      * The callable rules to apply on the data.
      *
      * @var array
      */
-    protected $callables;
+    protected array $callables;
 
     /**
      * The allowed callables.
      *
      * @var array
      */
-    protected $allowedCallables = ['*'];
+    protected array $allowedCallables = ['*'];
 
     /**
      * Construct a new instance.
@@ -51,6 +48,7 @@ class DataFormatter
 
     /**
      * Create an instance.
+     *
      * @param  array $data
      * @param  array $callables
      * @return CollabCorp\Formatter\DataFormatter
@@ -72,6 +70,7 @@ class DataFormatter
 
     /**
      * Get the registered allowed callables.
+     *
      * @return array
      */
     public function getAllowedCallables()
@@ -104,8 +103,10 @@ class DataFormatter
 
         return $this;
     }
+
     /**
      * Apply the callables.
+     *
      * @return self
      */
     public function apply()

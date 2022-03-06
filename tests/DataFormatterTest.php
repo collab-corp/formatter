@@ -45,6 +45,7 @@ class DataFormatterTest extends TestCase
         $this->assertEquals(24, $formattedData['favorite_number']);
         $this->assertNotEquals($formattedData['first_name'], $this->data["first_name"]);
     }
+
     /** @test */
     public function it_calls_callables_on_data_only_if_specified()
     {
@@ -78,6 +79,7 @@ class DataFormatterTest extends TestCase
         $this->assertEquals("12345", $formattedData['password']);
         $this->assertNotEquals($formattedData['password'], $this->data['password']);
     }
+
     /** @test */
     public function it_can_process_callbacks()
     {
@@ -113,6 +115,7 @@ class DataFormatterTest extends TestCase
 
         $this->assertNotEquals($this->data['get_notifications'], $formattedData['get_notifications']);
     }
+
     /** @test */
     public function it_can_specify_optional_callables_on_blank_input()
     {
@@ -138,6 +141,7 @@ class DataFormatterTest extends TestCase
         $this->assertEquals(null, $formattedData['favorite_date']);
 
     }
+
     /** @test */
     public function it_can_specify_optional_callables_on_callback()
     {
@@ -156,6 +160,7 @@ class DataFormatterTest extends TestCase
         $this->assertEquals($this->data['favorite_date'], $formattedData['favorite_date']);
         $this->assertNotEquals("04/01/2018", $formattedData['favorite_date']);
     }
+
     /** @test */
     public function it_can_specify_optional_callables_on_formattable_class()
     {
