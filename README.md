@@ -1,7 +1,8 @@
 
 # Input Formatter
 
-[![Build Status](https://travis-ci.org/collab-corp/formatter.svg?branch=master)](https://travis-ci.org/collab-corp/formatter)
+![Tests](https://github.com/collab-corp/formatter/actions/workflows/tests.yml/badge.svg)
+
 [![StyleCI](https://styleci.io/repos/119897298/shield?branch=master)](https://styleci.io/repos/119897298)
 
 A php package for formatting data/values using a laravel validation like syntax, powered by `Illuminate\Support` components.
