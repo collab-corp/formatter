@@ -83,7 +83,7 @@ class DataFormatter
      *
      * @param  string
      * @param  array  $callables
-     * @return self
+     * @return static
      */
     public function applyRules(string $key, array $callables)
     {
@@ -107,7 +107,7 @@ class DataFormatter
     /**
      * Apply the callables.
      *
-     * @return self
+     * @return static
      */
     public function apply()
     {
