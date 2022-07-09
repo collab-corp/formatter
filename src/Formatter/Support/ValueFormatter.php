@@ -151,7 +151,7 @@ class ValueFormatter
         //check if its a custom formattable class
         if ($callable instanceof Formattable) {
             return $callable->format($value, $this->exitProcessingCallback());
-            // or a callback
+        // or a callback
         } elseif ($callable instanceof Closure) {
             return $callable($value, $this->exitProcessingCallback());
         }
