@@ -30,7 +30,7 @@ class DataFormatter
     protected array $allowedCallables = ['*'];
 
     /**
-     * Construct a new instance.
+     * Construct a new DataFormatter instance.
      *
      * @param array $data
      * @param array  $callables
@@ -47,7 +47,7 @@ class DataFormatter
     }
 
     /**
-     * Create an instance.
+     * Create a new DataFormatter instance.
      *
      * @param  array $data
      * @param  array $callables
@@ -62,10 +62,13 @@ class DataFormatter
      * Register a whitelist for the allowed callables.
      *
      * @param  array  $whitelist
+     * @return static
      */
     public function allowedCallables(array $whitelist = [])
     {
         $this->allowedCallables = $whitelist;
+
+        return $this;
     }
 
     /**

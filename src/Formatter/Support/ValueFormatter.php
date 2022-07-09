@@ -1,4 +1,5 @@
 <?php
+
 namespace CollabCorp\Formatter\Support;
 
 use Closure;
@@ -123,9 +124,9 @@ class ValueFormatter
         }
         return $callable;
     }
+
     /**
      * Call callable using the given value and parameters.
-     *
      *
      * @param  string $value
      * @return mixed
@@ -150,7 +151,7 @@ class ValueFormatter
         //check if its a custom formattable class
         if ($callable instanceof Formattable) {
             return $callable->format($value, $this->exitProcessingCallback());
-        // or a callback
+            // or a callback
         } elseif ($callable instanceof Closure) {
             return $callable($value, $this->exitProcessingCallback());
         }
@@ -169,7 +170,8 @@ class ValueFormatter
 
     /**
      * Return a callback for passing closures/formattable classes.
-     * @return function
+     *
+     * @return \Closure
      */
     protected function exitProcessingCallback()
     {
@@ -232,7 +234,7 @@ class ValueFormatter
     /**
      * Apply the set callables on the value.
      *
-     * @return self
+     * @return static
      */
     public function apply()
     {
